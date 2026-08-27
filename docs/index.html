@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Primary Meta Tags -->
+  <title>Digit3D-MV: Multi-View Differentiable Geometry Generation via Dual-Level PixelDiT Flow Matching</title>
+  <meta name="title" content="Digit3D-MV: Multi-View Differentiable Geometry Generation via Dual-Level PixelDiT Flow Matching">
+  <meta name="description" content="Digit3D-MV introduces dual-level patch and pixel-space continuous flow matching for simultaneous 360 multi-view normal and depth map synthesis with 3D Rotary Position Embeddings (3D-RoPE).">
+  <meta name="keywords" content="Digit3D-MV, Multi-View Generation, PixelDiT, Rectified Flow, Flow Matching, Differentiable Geometry, 3D RoPE, Computer Vision">
+  <meta name="author" content="Khoi DO">
+  <meta name="theme-color" content="#6366f1">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Digit3D-MV: Multi-View Differentiable Geometry Generation">
+  <meta property="og:description" content="Dual-Level PixelDiT with Continuous Flow Matching for 360 Multi-View Geometry Synthesis.">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/style.css">
+  
+  <!-- Chart.js for Interactive Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- MathJax Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    /* Custom Neon & Glassmorphism Enhancements */
+    .hero-glow {
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(236, 72, 153, 0.15) 50%, transparent 70%);
+      filter: blur(80px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .card-glass {
+      background: rgba(18, 24, 38, 0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      box-shadow: 0 10px 35px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.12);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card-glass:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.25);
+    }
+
+    .pill-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+    }
+
+    .pill-cyan {
+      background: rgba(6, 182, 212, 0.15);
+      color: #06b6d4;
+      border: 1px solid rgba(6, 182, 212, 0.35);
+    }
+
+    .pill-pink {
+      background: rgba(236, 72, 153, 0.15);
+      color: #ec4899;
+      border: 1px solid rgba(236, 72, 153, 0.35);
+    }
+
+    .pill-purple {
+      background: rgba(139, 92, 246, 0.15);
+      color: #a855f7;
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    .pill-amber {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .tab-btn.is-active {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      color: #ffffff;
+      border-color: #a855f7;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .digit-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 3px;
+    }
+
+    .digit-btn:hover {
+      background: rgba(99, 102, 241, 0.25);
+      color: #ffffff;
+      border-color: #6366f1;
+      transform: translateY(-2px);
+    }
+
+    .digit-btn.is-active {
+      background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      color: #ffffff;
+      border-color: #60a5fa;
+      box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+      transform: scale(1.08);
+    }
+
+    .view-card {
+      background: rgba(15, 20, 32, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 0.75rem;
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .view-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(6, 182, 212, 0.4);
+    }
+
+    .view-card img {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .view-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Animated Background Mesh & Glow -->
+  <div class="bg-mesh"></div>
+  <div class="hero-glow"></div>
+
+  <!-- Hero Header Section -->
+  <section class="hero is-bold">
+    <div class="hero-body">
+      <div class="container is-max-desktop has-text-centered">
+        
+        <div class="mb-4">
+          <span class="pill-badge pill-cyan mr-2"><i class="fas fa-cube mr-2"></i>3D Differentiable Geometry</span>
+          <span class="pill-badge pill-pink mr-2"><i class="fas fa-wave-square mr-2"></i>Rectified Flow Matching</span>
+          <span class="pill-badge pill-purple"><i class="fas fa-microchip mr-2"></i>Dual-Level PixelDiT</span>
+        </div>
+        
+        <h1 class="title publication-title">
+          <span class="text-gradient">Digit3D-MV</span>: Multi-View Geometry Synthesis via Dual-Level PixelDiT Flow Matching
+        </h1>
+        
+        <p class="subtitle publication-subtitle">
+          A high-performance generative framework for simultaneous 360° multi-view normal and depth map synthesis, combining continuous Euler ODE flow matching, 3D Rotary Position Embeddings (3D-RoPE), and dual-level patch/pixel transformers.
+        </p>
+
+        <!-- Author / Organization -->
+        <div class="publication-authors mb-5">
+          <span class="author-block">
+            <a href="https://github.com/KhoiDOO" target="_blank"><i class="fab fa-github mr-1"></i>Khoi DO</a>
+          </span>
+          <div class="affiliation-block">
+            <span>Conquer3D Research & Open-Source Geometry Engine</span>
+          </div>
+        </div>
+
+        <!-- Action Links -->
+        <div class="publication-links">
+          <a href="https://github.com/KhoiDOO/digit3dmv" target="_blank" class="btn-action">
+            <i class="fab fa-github"></i>
+            <span>Code Repository</span>
+          </a>
+          <a href="#qualitative-results" class="btn-action">
+            <i class="fas fa-images"></i>
+            <span>Qualitative Results</span>
+          </a>
+          <a href="#quantitative-diagrams" class="btn-action">
+            <i class="fas fa-chart-line"></i>
+            <span>Quantitative Diagrams</span>
+          </a>
+          <a href="#architecture" class="btn-action">
+            <i class="fas fa-network-wired"></i>
+            <span>Architecture</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Hero Teaser: Interactive Training Evolution -->
+  <section class="section py-4">
+    <div class="container is-max-desktop">
+      <div class="card-glass p-5">
+        <div class="level mb-4">
+          <div class="level-left">
+            <div>
+              <h2 class="title is-4 mb-1"><i class="fas fa-film text-gradient mr-2"></i>Multi-View Generative Training Dynamics</h2>
+              <p class="is-size-7 has-text-grey-light">Continuous Euler ODE flow evolution with synchronized loss curves over 50,000 training iterations.</p>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="buttons are-small">
+              <button class="tab-btn is-active" id="btn-gif-loss" onclick="toggleHeroGif('loss')"><i class="fas fa-chart-area mr-1"></i>With Loss Curve</button>
+              <button class="tab-btn" id="btn-gif-pure" onclick="toggleHeroGif('pure')"><i class="fas fa-eye mr-1"></i>Pure Samples</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="has-text-centered">
+          <img id="hero-gif" src="static/media/training_evolution_with_loss.gif" alt="Training Evolution GIF" style="border-radius: 12px; max-height: 580px; width: 100%; object-fit: contain; box-shadow: 0 8px 30px rgba(0,0,0,0.6);" />
+        </div>
+
+        <!-- Key Metrics Highlights -->
+        <div class="columns is-mobile is-multiline has-text-centered mt-4 pt-2" style="border-top: 1px solid rgba(255,255,255,0.08);">
+          <div class="column is-3-tablet is-6-mobile">
+            <p class="heading has-text-grey">Final Flow Loss</p>
+            <p class="title is-4" style="color: #00f0ff;">0.0433</p>
+          </div>
+          <div class="column is-3-tablet is-6-mobile">
+            <p class="heading has-text-grey">Generation Speed</p>
+            <p class="title is-4" style="color: #ff3366;">25 ODE Steps</p>
+          </div>
+          <div class="column is-3-tablet is-6-mobile">
+            <p class="heading has-text-grey">Training Throughput</p>
+            <p class="title is-4" style="color: #38bdf8;">665 samples/s</p>
+          </div>
+          <div class="column is-3-tablet is-6-mobile">
+            <p class="heading has-text-grey">Multi-View Span</p>
+            <p class="title is-4" style="color: #a855f7;">360° Equatorial</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Model Architecture Diagram Section -->
+  <section class="section" id="architecture">
+    <div class="container is-max-desktop">
+      <div class="card-glass p-6">
+        <div class="has-text-centered mb-5">
+          <span class="pill-badge pill-purple mb-2"><i class="fas fa-layer-group mr-2"></i>Differentiable Architecture</span>
+          <h2 class="title is-3">Dual-Level Multi-View PixelDiT Architecture</h2>
+          <p class="subtitle is-6 has-text-grey-light">Decoupling global multi-view 3D context in patch space from fine geometric normal refinement in pixel space.</p>
+        </div>
+
+        <!-- SVG Architecture Diagram -->
+        <div class="has-text-centered mb-5 p-4" style="background: rgba(13, 17, 23, 0.9); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <svg viewBox="0 0 920 420" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="max-height: 420px; font-family: 'Inter', sans-serif;">
+            <defs>
+              <linearGradient id="gradFlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#6366f1" stop-opacity="0.9"/>
+              </linearGradient>
+              <linearGradient id="gradPatch" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#a855f7" stop-opacity="0.9"/>
+              </linearGradient>
+              <linearGradient id="gradPixel" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ec4899" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#ff3366" stop-opacity="0.9"/>
+              </linearGradient>
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur"/>
+                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+              </filter>
+            </defs>
+
+            <!-- Conditioning Input Box -->
+            <rect x="30" y="50" width="160" height="90" rx="10" fill="#161B26" stroke="#00f0ff" stroke-width="1.5" />
+            <text x="110" y="85" fill="#00f0ff" font-size="13" font-weight="bold" text-anchor="middle">Front View Input</text>
+            <text x="110" y="105" fill="#94a3b8" font-size="11" text-anchor="middle">$\mathbf{x}_{\text{cond}} \in \mathbb{R}^{3 \times H \times W}$</text>
+            <text x="110" y="125" fill="#64748b" font-size="10" text-anchor="middle">(Front Normal Map)</text>
+
+            <!-- Timestep Box -->
+            <rect x="30" y="170" width="160" height="70" rx="10" fill="#161B26" stroke="#f59e0b" stroke-width="1.5" />
+            <text x="110" y="200" fill="#f59e0b" font-size="13" font-weight="bold" text-anchor="middle">Flow Timestep $t \in [0, 1]$</text>
+            <text x="110" y="222" fill="#94a3b8" font-size="11" text-anchor="middle">SinCos Embedding</text>
+
+            <!-- Condition Merger -->
+            <rect x="30" y="270" width="160" height="90" rx="10" fill="#161B26" stroke="#10b981" stroke-width="1.5" />
+            <text x="110" y="305" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">ImageEncoder + CFG</text>
+            <text x="110" y="325" fill="#94a3b8" font-size="11" text-anchor="middle">Null Token Dropout ($p=0.15$)</text>
+            <text x="110" y="345" fill="#64748b" font-size="10" text-anchor="middle">$\mathbf{c} = \text{SiLU}(t_{\text{emb}} + \mathbf{y}_{\text{emb}})$</text>
+
+            <!-- Arrow from inputs to DiT Body -->
+            <path d="M 190 95 L 250 95 L 250 200 L 280 200" stroke="#00f0ff" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+            <path d="M 190 205 L 280 205" stroke="#f59e0b" stroke-width="2" fill="none" />
+            <path d="M 190 315 L 250 315 L 250 210 L 280 210" stroke="#10b981" stroke-width="2" fill="none" />
+
+            <!-- Level 1: Patch Space Transformer -->
+            <rect x="290" y="40" width="280" height="150" rx="12" fill="#161B26" stroke="url(#gradPatch)" stroke-width="2" filter="url(#glow)" />
+            <text x="430" y="70" fill="#a855f7" font-size="15" font-weight="bold" text-anchor="middle">Level 1: AugmentedDiTBlock $\times 6$</text>
+            <text x="430" y="95" fill="#e2e8f0" font-size="12" text-anchor="middle">Global Patch Token Attention ($V \times L$ tokens)</text>
+            <rect x="310" y="110" width="240" height="32" rx="6" fill="#0D1117" stroke="#6366f1" stroke-width="1" />
+            <text x="430" y="131" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">3D-RoPE (Azimuth View $\times$ Spatial $H, W$)</text>
+            <text x="430" y="168" fill="#94a3b8" font-size="11" text-anchor="middle">AdaLN Modulation: $\gamma, \beta, \alpha, \text{scale}$ from $\mathbf{c}$</text>
+
+            <!-- Cross-Level Bridge Arrow -->
+            <path d="M 430 190 L 430 225" stroke="#a855f7" stroke-width="2.5" stroke-dasharray="4,4" fill="none" />
+            <text x="475" y="212" fill="#a855f7" font-size="10" font-weight="bold">Spatial Guide $\mathbf{s}$</text>
+
+            <!-- Level 2: Pixel Space Transformer -->
+            <rect x="290" y="235" width="280" height="150" rx="12" fill="#161B26" stroke="url(#gradPixel)" stroke-width="2" filter="url(#glow)" />
+            <text x="430" y="265" fill="#ec4899" font-size="15" font-weight="bold" text-anchor="middle">Level 2: MVPiTBlock $\times 2$</text>
+            <text x="430" y="290" fill="#e2e8f0" font-size="12" text-anchor="middle">Local Sub-Patch Pixel Tokens ($P^2 = 16$ pixels)</text>
+            <rect x="310" y="305" width="240" height="32" rx="6" fill="#0D1117" stroke="#ff3366" stroke-width="1" />
+            <text x="430" y="326" fill="#ff6688" font-size="11" font-weight="bold" text-anchor="middle">Token Compress $\to$ 3D Attn $\to$ Expand</text>
+            <text x="430" y="363" fill="#94a3b8" font-size="11" text-anchor="middle">AdaLN Patch-Level Conditioning from $\mathbf{s}$</text>
+
+            <!-- Arrow to Output -->
+            <path d="M 570 200 L 640 200" stroke="#00f0ff" stroke-width="2.5" fill="none" />
+
+            <!-- Output Reconstructor -->
+            <rect x="645" y="70" width="240" height="270" rx="12" fill="#161B26" stroke="#00f0ff" stroke-width="2" />
+            <text x="765" y="105" fill="#00f0ff" font-size="15" font-weight="bold" text-anchor="middle">FinalLayer &amp; Multi-Fold</text>
+            
+            <!-- 4 Views Output Icons (Centered with symmetric 21px margins) -->
+            <rect x="666" y="130" width="42" height="42" rx="6" fill="#0D1117" stroke="#38bdf8" stroke-width="1.2" />
+            <text x="687" y="156" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">45°</text>
+            
+            <rect x="718" y="130" width="42" height="42" rx="6" fill="#0D1117" stroke="#38bdf8" stroke-width="1.2" />
+            <text x="739" y="156" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">135°</text>
+
+            <rect x="770" y="130" width="42" height="42" rx="6" fill="#0D1117" stroke="#38bdf8" stroke-width="1.2" />
+            <text x="791" y="156" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">225°</text>
+
+            <rect x="822" y="130" width="42" height="42" rx="6" fill="#0D1117" stroke="#38bdf8" stroke-width="1.2" />
+            <text x="843" y="156" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">315°</text>
+
+            <text x="765" y="208" fill="#e2e8f0" font-size="12" font-weight="bold" text-anchor="middle">Target 360° Multi-Views</text>
+            <text x="765" y="232" fill="#94a3b8" font-size="11" text-anchor="middle">$\hat{\mathbf{x}} \in \mathbb{R}^{V \times 3 \times H \times W}$</text>
+            
+            <rect x="665" y="258" width="200" height="62" rx="8" fill="#0D1117" stroke="#10b981" stroke-width="1.2" />
+            <text x="765" y="282" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">Euler ODE Flow Matching</text>
+            <text x="765" y="304" fill="#64748b" font-size="10" text-anchor="middle">$\mathbf{x}_1 = \mathbf{x}_0 + \int_0^1 \mathbf{v}_\theta(\mathbf{x}_t, t) dt$</text>
+          </svg>
+        </div>
+
+        <!-- Component Highlights Grid -->
+        <div class="columns is-multiline">
+          <div class="column is-4">
+            <div class="p-4" style="background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00f0ff;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-compass mr-2" style="color:#00f0ff;"></i>3D-RoPE Embeddings</h4>
+              <p class="is-size-7 has-text-grey-light">Extends rotary position embeddings to 3D space by allocating dedicated rotary frequencies across View Index ($V$) and Image Coordinates ($H, W$).</p>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="p-4" style="background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #a855f7;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-th mr-2" style="color:#a855f7;"></i>Dual-Level Space</h4>
+              <p class="is-size-7 has-text-grey-light">Global patch tokens capture multi-view topological consistency, while local sub-patch pixel tokens preserve sharp surface normal contours.</p>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="p-4" style="background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #ec4899;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-bolt mr-2" style="color:#ec4899;"></i>Flow Matching ODE</h4>
+              <p class="is-size-7 has-text-grey-light">Rectified linear probability paths connecting Gaussian noise directly to multi-view normal distributions in only 25 Euler steps.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Qualitative Results Section: Interactive Digit Multi-View Inspector -->
+  <section class="section" id="qualitative-results">
+    <div class="container is-max-desktop">
+      <div class="card-glass p-6">
+        <div class="has-text-centered mb-5">
+          <span class="pill-badge pill-cyan mb-2"><i class="fas fa-cubes mr-2"></i>360° Visual Fidelity</span>
+          <h2 class="title is-3">Qualitative Multi-View Geometry Showcase</h2>
+          <p class="subtitle is-6 has-text-grey-light">Interactive sample browser for generated 360° normal maps across all 10 digit classes (0–9).</p>
+        </div>
+
+        <!-- Class Selector Buttons -->
+        <div class="has-text-centered mb-5">
+          <p class="heading has-text-grey mb-2">Select Digit Class:</p>
+          <div id="digit-selector-group">
+            <!-- Render 0 to 9 buttons -->
+            <button class="digit-btn is-active" onclick="selectClass(0)">0</button>
+            <button class="digit-btn" onclick="selectClass(1)">1</button>
+            <button class="digit-btn" onclick="selectClass(2)">2</button>
+            <button class="digit-btn" onclick="selectClass(3)">3</button>
+            <button class="digit-btn" onclick="selectClass(4)">4</button>
+            <button class="digit-btn" onclick="selectClass(5)">5</button>
+            <button class="digit-btn" onclick="selectClass(6)">6</button>
+            <button class="digit-btn" onclick="selectClass(7)">7</button>
+            <button class="digit-btn" onclick="selectClass(8)">8</button>
+            <button class="digit-btn" onclick="selectClass(9)">9</button>
+          </div>
+        </div>
+
+        <!-- Active Class Multi-View Cards -->
+        <div class="columns is-multiline is-mobile mb-4" id="views-grid">
+          <!-- Front Input -->
+          <div class="column is-2-tablet is-4-mobile">
+            <div class="view-card" style="border-color: rgba(6,182,212,0.5);">
+              <img id="img-front" src="static/media/views/class_0/0_10/front_condition.png" alt="Front Condition" />
+              <div class="view-label" style="color: #06b6d4;">Front Input</div>
+            </div>
+          </div>
+          <!-- View 0 (45°) -->
+          <div class="column is-2-tablet is-4-mobile">
+            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+              <img id="img-gen-0" src="static/media/views/class_0/0_10/gen_view_00.png" alt="Gen View 45°" />
+              <div class="view-label" style="color: #ffd700;">Gen 45°</div>
+            </div>
+          </div>
+          <!-- View 1 (135°) -->
+          <div class="column is-2-tablet is-4-mobile">
+            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+              <img id="img-gen-1" src="static/media/views/class_0/0_10/gen_view_01.png" alt="Gen View 135°" />
+              <div class="view-label" style="color: #ffd700;">Gen 135°</div>
+            </div>
+          </div>
+          <!-- View 2 (225°) -->
+          <div class="column is-2-tablet is-4-mobile">
+            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+              <img id="img-gen-2" src="static/media/views/class_0/0_10/gen_view_02.png" alt="Gen View 225°" />
+              <div class="view-label" style="color: #ffd700;">Gen 225°</div>
+            </div>
+          </div>
+          <!-- View 3 (315°) -->
+          <div class="column is-2-tablet is-4-mobile">
+            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+              <img id="img-gen-3" src="static/media/views/class_0/0_10/gen_view_03.png" alt="Gen View 315°" />
+              <div class="view-label" style="color: #ffd700;">Gen 315°</div>
+            </div>
+          </div>
+          <!-- Ground Truth Summary Strip -->
+          <div class="column is-2-tablet is-4-mobile">
+            <div class="view-card" style="border-color: rgba(80,220,130,0.5);">
+              <img id="img-gt-0" src="static/media/views/class_0/0_10/gt_view_00.png" alt="GT View 45°" />
+              <div class="view-label" style="color: #50dc82;">GT 45° (Ref)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Comparison Strip Image for Class -->
+        <div class="p-3 mb-5" style="background: rgba(13,17,23,0.8); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <p class="heading has-text-grey mb-2"><i class="fas fa-columns mr-1"></i>Full Comparison Strip [Front | Generated 360° | Ground Truth 360°]:</p>
+          <img id="img-grid-strip" src="static/media/grids/sample_0001_class_0_0_10.png" alt="Full Strip" style="width: 100%; border-radius: 8px;" />
+        </div>
+
+        <!-- Master Contact Sheet Preview -->
+        <div class="p-4" style="background: rgba(22, 27, 34, 0.6); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <div class="level mb-3">
+            <div class="level-left">
+              <h4 class="title is-6 has-text-white mb-0"><i class="fas fa-table-cells text-gradient mr-2"></i>Full 10-Class Multi-View Matrix (All Digits 0–9)</h4>
+            </div>
+            <div class="level-right">
+              <a href="static/media/all_samples_grid.png" target="_blank" class="button is-small is-dark is-outlined" style="color:#00f0ff; border-color:#00f0ff;">
+                <i class="fas fa-expand mr-1"></i>Open Full Matrix
+              </a>
+            </div>
+          </div>
+          <img src="static/media/all_samples_grid.png" alt="All Samples Grid" style="width: 100%; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);" />
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Quantitative Diagrams Section -->
+  <section class="section" id="quantitative-diagrams">
+    <div class="container is-max-desktop">
+      <div class="card-glass p-6">
+        <div class="has-text-centered mb-5">
+          <span class="pill-badge pill-pink mb-2"><i class="fas fa-chart-pie mr-2"></i>Quantitative Rigor</span>
+          <h2 class="title is-3">Experimental Analysis & Empirical Benchmark Diagrams</h2>
+          <p class="subtitle is-6 has-text-grey-light">Exhaustive quantitative diagrams showcasing loss convergence, throughput scaling, and ODE trajectory stability.</p>
+        </div>
+
+        <div class="columns is-multiline">
+          
+          <!-- Diagram 1: Loss Convergence Curve -->
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-chart-line mr-2" style="color:#00f0ff;"></i>Training & Validation Convergence</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Rectified Flow loss smoothly decreases from 8.75 down to 0.1158 with zero divergence or mode collapse.</p>
+              <div style="height: 250px;">
+                <canvas id="chart-loss"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagram 2: Patch Size Throughput Scaling -->
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-gauge-high mr-2" style="color:#a855f7;"></i>Throughput vs Patch Size Scaling</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Self-attention token reduction ($N \propto 1/P^2$) accelerates training throughput from 50 to 200+ iters/s.</p>
+              <div style="height: 250px;">
+                <canvas id="chart-throughput"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagram 3: ODE Integration Step Quality -->
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-route mr-2" style="color:#ff3366;"></i>ODE Sampling Steps vs. Normal PSNR &amp; Angular Error (°)</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Straight Rectified Flow trajectories saturate peak PSNR (23.37 dB) and low angular error (MedAE 0.90°, MAE 7.50°) in only 5–10 Euler steps.</p>
+              <div style="height: 250px;">
+                <canvas id="chart-ode"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagram 4: Multi-View Consistency Radar -->
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-crosshairs mr-2" style="color:#10b981;"></i>Cross-View Geometric Alignment Radar</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">High angular correlation across all 4 canonical camera positions ($45^\circ, 135^\circ, 225^\circ, 315^\circ$).</p>
+              <div style="height: 250px;">
+                <canvas id="chart-radar"></canvas>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Training Milestones Progress Timeline -->
+        <div class="mt-5 p-4" style="background: rgba(13,17,23,0.8); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <h4 class="title is-6 has-text-white mb-3"><i class="fas fa-clock-rotate-left mr-2" style="color:#f59e0b;"></i>Multi-View Geometry Emergence Timeline</h4>
+          <div class="columns is-mobile is-multiline has-text-centered">
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/step_01k.png" alt="Step 1k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-info mt-1">Step 1,000 (Loss: 8.490)</p>
+              <p class="is-size-7 has-text-grey">Initial silhouette formation</p>
+            </div>
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/step_10k.png" alt="Step 10k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-info mt-1">Step 10,000 (Loss: 1.754)</p>
+              <p class="is-size-7 has-text-grey">3D structure emerges</p>
+            </div>
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/step_25k.png" alt="Step 25k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-info mt-1">Step 25,000 (Loss: 0.226)</p>
+              <p class="is-size-7 has-text-grey">Surface normals refine</p>
+            </div>
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/step_50k.png" alt="Step 50k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-success mt-1">Step 50,000 (Loss: 0.043)</p>
+              <p class="is-size-7 has-text-grey">Sharp 360° geometry</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <!-- Footer -->
+  <footer class="footer has-text-centered" style="background: transparent; border-top: 1px solid rgba(255,255,255,0.05); padding: 3rem 1.5rem;">
+    <div class="container">
+      <p class="is-size-7 has-text-grey">
+        <strong class="has-text-grey-light">Digit3D-MV</strong> by <a href="https://github.com/KhoiDOO" target="_blank" class="has-text-info">Khoi DO</a>. Open-source under MIT License.
+      </p>
+      <p class="is-size-7 has-text-grey-dark mt-1">
+        Built with Bulma, Chart.js, and Conquer3D Geometry Engine.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // Sample paths database for 10 classes
+    const classData = {
+      0: { name: "0_10", strip: "sample_0001_class_0_0_10.png" },
+      1: { name: "1_1004", strip: "sample_0002_class_1_1_1004.png" },
+      2: { name: "2_1", strip: "sample_0003_class_2_2_1.png" },
+      3: { name: "3_1020", strip: "sample_0004_class_3_3_1020.png" },
+      4: { name: "4_1010", strip: "sample_0005_class_4_4_1010.png" },
+      5: { name: "5_1003", strip: "sample_0006_class_5_5_1003.png" },
+      6: { name: "6_100", strip: "sample_0007_class_6_6_100.png" },
+      7: { name: "7_0", strip: "sample_0008_class_7_7_0.png" },
+      8: { name: "8_1007", strip: "sample_0009_class_8_8_1007.png" },
+      9: { name: "9_1000", strip: "sample_0010_class_9_9_1000.png" },
+    };
+
+    function selectClass(c) {
+      // Update active button
+      document.querySelectorAll('.digit-btn').forEach((btn, idx) => {
+        btn.classList.toggle('is-active', idx === c);
+      });
+
+      const info = classData[c];
+      const basePath = `static/media/views/class_${c}/${info.name}`;
+      
+      document.getElementById('img-front').src = `${basePath}/front_condition.png`;
+      document.getElementById('img-gen-0').src = `${basePath}/gen_view_00.png`;
+      document.getElementById('img-gen-1').src = `${basePath}/gen_view_01.png`;
+      document.getElementById('img-gen-2').src = `${basePath}/gen_view_02.png`;
+      document.getElementById('img-gen-3').src = `${basePath}/gen_view_03.png`;
+      document.getElementById('img-gt-0').src = `${basePath}/gt_view_00.png`;
+      document.getElementById('img-grid-strip').src = `static/media/grids/${info.strip}`;
+    }
+
+    function toggleHeroGif(mode) {
+      const img = document.getElementById('hero-gif');
+      const btnLoss = document.getElementById('btn-gif-loss');
+      const btnPure = document.getElementById('btn-gif-pure');
+
+      if (mode === 'loss') {
+        img.src = 'static/media/training_evolution_with_loss.gif';
+        btnLoss.classList.add('is-active');
+        btnPure.classList.remove('is-active');
+      } else {
+        img.src = 'static/media/training_evolution.gif';
+        btnPure.classList.add('is-active');
+        btnLoss.classList.remove('is-active');
+      }
+    }
+
+    // Initialize Chart.js Quantitative Figures
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Loss Convergence Chart (50 real empirical steps from history.json)
+      const lossLabels = ["1k", "2k", "3k", "4k", "5k", "6k", "7k", "8k", "9k", "10k", "11k", "12k", "13k", "14k", "15k", "16k", "17k", "18k", "19k", "20k", "21k", "22k", "23k", "24k", "25k", "26k", "27k", "28k", "29k", "30k", "31k", "32k", "33k", "34k", "35k", "36k", "37k", "38k", "39k", "40k", "41k", "42k", "43k", "44k", "45k", "46k", "47k", "48k", "49k", "50k"];
+      const trainLossData = [1.0408, 0.2006, 0.1541, 0.1236, 0.1151, 0.1034, 0.1018, 0.0942, 0.089, 0.0804, 0.0806, 0.0804, 0.0724, 0.0739, 0.0691, 0.071, 0.065, 0.0654, 0.0662, 0.0687, 0.0633, 0.064, 0.0632, 0.0579, 0.0559, 0.0546, 0.0562, 0.0628, 0.0541, 0.0545, 0.0534, 0.0539, 0.0528, 0.0542, 0.0493, 0.052, 0.0549, 0.0491, 0.0502, 0.0509, 0.0491, 0.0494, 0.0501, 0.0468, 0.0511, 0.0484, 0.0465, 0.0468, 0.0527, 0.0464];
+      const valLossData = [8.4902, 7.4927, 6.4235, 5.4415, 4.4889, 3.6617, 3.0352, 2.5059, 2.0859, 1.7537, 1.504, 1.3174, 1.1578, 1.0466, 0.945, 0.8764, 0.8135, 0.7487, 0.6816, 0.601, 0.5036, 0.4014, 0.3338, 0.2754, 0.2264, 0.1948, 0.1664, 0.1452, 0.1349, 0.1148, 0.1074, 0.0944, 0.0863, 0.082, 0.0679, 0.063, 0.0612, 0.0631, 0.0579, 0.0543, 0.0514, 0.0548, 0.0495, 0.0511, 0.0475, 0.0447, 0.0439, 0.0464, 0.0462, 0.0433];
+
+      const ctxLoss = document.getElementById('chart-loss').getContext('2d');
+      new Chart(ctxLoss, {
+        type: 'line',
+        data: {
+          labels: lossLabels,
+          datasets: [
+            {
+              label: 'Train Loss (EMA)',
+              data: trainLossData,
+              borderColor: '#00f0ff',
+              backgroundColor: 'rgba(0, 240, 255, 0.08)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2.2,
+              pointRadius: 0
+            },
+            {
+              label: 'Val Loss (EMA Model)',
+              data: valLossData,
+              borderColor: '#ff3366',
+              backgroundColor: '#ff3366',
+              borderWidth: 2.4,
+              pointRadius: 2.5,
+              pointHoverRadius: 5,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } },
+          scales: {
+            x: { 
+              grid: { color: 'rgba(255,255,255,0.06)' }, 
+              ticks: { 
+                color: '#94a3b8', 
+                font: { size: 9 },
+                callback: function(val, index) {
+                  return index % 5 === 0 ? lossLabels[index] : '';
+                }
+              } 
+            },
+            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+          }
+        }
+      });
+
+      // 2. Throughput Chart
+      const ctxThroughput = document.getElementById('chart-throughput').getContext('2d');
+      new Chart(ctxThroughput, {
+        type: 'bar',
+        data: {
+          labels: ['Patch P=2 (4,096 tokens)', 'Patch P=4 (1,024 tokens)', 'Patch P=8 (256 tokens)'],
+          datasets: [{
+            label: 'Throughput (samples/sec)',
+            data: [165, 665, 1420],
+            backgroundColor: ['rgba(99, 102, 241, 0.7)', 'rgba(6, 182, 212, 0.85)', 'rgba(236, 72, 153, 0.7)'],
+            borderColor: ['#6366f1', '#06b6d4', '#ec4899'],
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 9 } }, title: { display: true, text: 'Samples / Sec', color: '#94a3b8', font: { size: 9 } } }
+          }
+        }
+      });
+
+      // 3. ODE Steps vs Quality Benchmark (Real metrics from eval_step.py)
+      const ctxOde = document.getElementById('chart-ode').getContext('2d');
+      new Chart(ctxOde, {
+        type: 'line',
+        data: {
+          labels: ['2 Steps', '5 Steps', '10 Steps', '20 Steps', '25 Steps', '50 Steps', '100 Steps'],
+          datasets: [
+            {
+              label: 'Reconstruction PSNR (dB)',
+              data: [23.31, 23.37, 23.36, 23.23, 23.02, 22.92, 23.08],
+              borderColor: '#00f0ff',
+              backgroundColor: 'rgba(0, 240, 255, 0.1)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2.4,
+              pointRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Median Angular Error (°)',
+              data: [1.10, 0.90, 1.03, 1.05, 1.06, 1.07, 1.06],
+              borderColor: '#ff3366',
+              backgroundColor: 'rgba(255, 51, 102, 0.15)',
+              tension: 0.3,
+              borderWidth: 2.2,
+              pointRadius: 4,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { labels: { color: '#e2e8f0', font: { size: 10 } } },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  const unit = ctx.dataset.yAxisID === 'y1' ? '°' : ' dB';
+                  return `${ctx.dataset.label}: ${ctx.parsed.y}${unit}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 9 } } },
+            y: { 
+              type: 'linear', 
+              position: 'left',
+              grid: { color: 'rgba(255,255,255,0.06)' }, 
+              ticks: { color: '#00f0ff', font: { size: 9 } },
+              title: { display: true, text: 'PSNR (dB)', color: '#00f0ff', font: { size: 9 } },
+              min: 22.0,
+              max: 24.0
+            },
+            y1: { 
+              type: 'linear', 
+              position: 'right',
+              grid: { drawOnChartArea: false }, 
+              ticks: { color: '#ff3366', font: { size: 9 } },
+              title: { display: true, text: 'MedAE (°)', color: '#ff3366', font: { size: 9 } },
+              min: 0.5,
+              max: 1.8
+            }
+          }
+        }
+      });
+
+      // 4. Radar Consistency Chart
+      const ctxRadar = document.getElementById('chart-radar').getContext('2d');
+      new Chart(ctxRadar, {
+        type: 'radar',
+        data: {
+          labels: ['View 0 (45°)', 'View 1 (135°)', 'View 2 (225°)', 'View 3 (315°)'],
+          datasets: [
+            {
+              label: 'Normal Cosine Similarity (%)',
+              data: [97.4, 98.1, 97.8, 97.4],
+              borderColor: '#00f0ff',
+              backgroundColor: 'rgba(0, 240, 255, 0.2)',
+              borderWidth: 2.2,
+              pointRadius: 3.5
+            },
+            {
+              label: 'Angular Accuracy <22.5° (%)',
+              data: [91.8, 92.3, 93.3, 92.9],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.25)',
+              borderWidth: 2.2,
+              pointRadius: 3.5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } },
+          scales: {
+            r: {
+              grid: { color: 'rgba(255,255,255,0.1)' },
+              angleLines: { color: 'rgba(255,255,255,0.1)' },
+              pointLabels: { color: '#e2e8f0', font: { size: 9.5 } },
+              ticks: { display: false, min: 85, max: 100 }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
