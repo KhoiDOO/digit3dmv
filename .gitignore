@@ -231,5 +231,4 @@ debug_mv/
 *.tar
 *.tar.gz
 *.pt
-outputs/
 
