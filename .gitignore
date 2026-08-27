@@ -230,4 +230,6 @@ debug_mv/
 *.zip
 *.tar
 *.tar.gz
-*.ptoutputs/
+*.pt
+outputs/
+
