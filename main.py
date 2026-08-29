@@ -290,7 +290,7 @@ def main():
         raise ValueError(f"Unknown modality: {args.modality}")
 
     # Build Training and Validation Datasets
-    all_360 = (args.num_views == 12)
+    all_360 = (args.num_views == 121)
     train_dataset = Digit3DMV(
         root=args.root,
         train=True,
@@ -300,6 +300,7 @@ def main():
         return_front_variation=args.return_front_variation,
         return_c2w=False,
         use_zip=args.use_zip,
+        download=True
     )
     val_dataset = Digit3DMV(
         root=args.root,
@@ -310,6 +311,7 @@ def main():
         return_front_variation=False,
         return_c2w=False,
         use_zip=args.use_zip,
+        download=True
     )
 
     train_loader = DataLoader(
