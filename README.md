@@ -121,5 +121,18 @@ python make_gif.py --exp_dir outputs/normal_4_rectified_flow_ec305d90 --fps 8
 
 ---
 
+## 🙏 Acknowledgements
+
+We sincerely thank and acknowledge the outstanding open-source projects and repositories that supported and inspired this work:
+
+- [Conquer3D](https://github.com/KhoiDOO/conquer3d) — Differentiable geometry engine, mesh rendering pipelines, and 3D primitives.
+- [rectified-flow-pytorch](https://github.com/lucidrains/rectified-flow-pytorch) — Elegant continuous flow matching framework in PyTorch.
+- [rotary-embedding-torch](https://github.com/lucidrains/rotary-embedding-torch) — Rotary Position Embeddings (RoPE) implementation.
+- [nvdiffrast](https://github.com/NVlabs/nvdiffrast) — NVIDIA's high-performance differentiable rasterization library.
+- [PixelDiT](https://github.com/Zhendong-Wang/PixelDiT) — Dual-level patch- and pixel-space diffusion transformer foundations.
+- [Academic Project Page Template](https://github.com/Academic-project-page-template/Academic-project-page-template.github.io) — Research project presentation template.
+
+---
+
 ## 📄 License
 This project is open-source under the [MIT License](LICENSE).

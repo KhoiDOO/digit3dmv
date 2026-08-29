@@ -55,7 +55,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--show_loss", action="store_true", default=False, help="Render an upper dynamic training & validation loss progression figure.")
     parser.add_argument("--flip_vertical", action="store_true", default=False, help="Flip sample images vertically (for legacy inverted coordinate runs).")
     parser.add_argument("--max_frames", type=int, default=None, help="Maximum number of frames to include (subsamples evenly if more exist).")
-    parser.add_argument("--width", type=int, default=880, help="Target width for the composite animation frames.")
+    parser.add_argument("--width", type=int, default=None, help="Target width for composite animation frames (default: 1200px for >6 views, 880px otherwise).")
     parser.add_argument("--loop", type=int, default=0, help="GIF loop count (0 = infinite).")
 
     return parser.parse_args()
@@ -183,6 +183,104 @@ def render_loss_plot(
     return img_rgba[:, :, :3]
 
 
+def draw_section_header_bar(
+    draw: ImageDraw.ImageDraw,
+    start_y: int,
+    target_width: int,
+    labels_height: int,
+    num_views: int,
+):
+    """Renders a 3-section header bar with distinct panel tints and overlap-proof typography."""
+    col_span = 1 + 2 * num_views
+    col_w = target_width / col_span
+
+    front_w = int(col_w * 1)
+    gen_w = int(col_w * num_views)
+    gt_w = target_width - front_w - gen_w
+
+    gen_x = front_w
+    gt_x = front_w + gen_w
+
+    # Background Panels
+    draw.rectangle([(0, start_y), (front_w, start_y + labels_height)], fill=(16, 28, 38))
+    draw.rectangle([(gen_x, start_y), (gen_x + gen_w, start_y + labels_height)], fill=(32, 28, 16))
+    draw.rectangle([(gt_x, start_y), (target_width, start_y + labels_height)], fill=(16, 34, 24))
+
+    # Border Lines
+    draw.line([(0, start_y), (target_width, start_y)], fill=(48, 54, 61), width=1)
+    draw.line([(0, start_y + labels_height), (target_width, start_y + labels_height)], fill=(48, 54, 61), width=1)
+    draw.line([(front_w, start_y), (front_w, start_y + labels_height)], fill=(48, 54, 61), width=1)
+    draw.line([(gt_x, start_y), (gt_x, start_y + labels_height)], fill=(48, 54, 61), width=1)
+
+    f_base = get_font(12, bold=True)
+    f_sm = get_font(10, bold=True)
+    f_xs = get_font(9, bold=True)
+
+    def text_size(t, f):
+        bb = draw.textbbox((0, 0), t, font=f)
+        return bb[2] - bb[0], bb[3] - bb[1]
+
+    # 1. Front Condition Label
+    front_full = "Front Condition"
+    front_cond = "Front Cond"
+    front_short = "Front"
+
+    w_full, _ = text_size(front_full, f_base)
+    w_cond, _ = text_size(front_cond, f_base)
+    w_short, _ = text_size(front_short, f_base)
+    w_short_sm, _ = text_size(front_short, f_sm)
+
+    if front_w >= w_full + 8:
+        f_lbl, f_font, f_w = front_full, f_base, w_full
+    elif front_w >= w_cond + 6:
+        f_lbl, f_font, f_w = front_cond, f_base, w_cond
+    elif front_w >= w_short + 4:
+        f_lbl, f_font, f_w = front_short, f_base, w_short
+    elif front_w >= w_short_sm + 2:
+        f_lbl, f_font, f_w = front_short, f_sm, w_short_sm
+    else:
+        f_lbl, f_font, f_w = "F", f_xs, text_size("F", f_xs)[0]
+
+    front_tx = max(2, (front_w - f_w) // 2)
+    draw.text((front_tx, start_y + 6), f_lbl, fill=(0, 229, 255), font=f_font)
+
+    # 2. Generated Multi-Views Label
+    gen_full = f"Generated 360° Multi-Views ({num_views} Views)"
+    gen_mid = f"Generated 360° ({num_views} Views)"
+    gen_short = f"Generated ({num_views}V)"
+
+    gw_full, _ = text_size(gen_full, f_base)
+    gw_mid, _ = text_size(gen_mid, f_base)
+
+    if gen_w >= gw_full + 16:
+        g_lbl, g_font, g_w = gen_full, f_base, gw_full
+    elif gen_w >= gw_mid + 10:
+        g_lbl, g_font, g_w = gen_mid, f_base, gw_mid
+    else:
+        g_lbl, g_font, g_w = gen_short, f_sm, text_size(gen_short, f_sm)[0]
+
+    gen_tx = gen_x + max(6, min(14, (gen_w - g_w) // 2))
+    draw.text((gen_tx, start_y + 6), g_lbl, fill=(255, 215, 0), font=g_font)
+
+    # 3. Ground Truth 360° Label
+    gt_full = f"Ground Truth 360° ({num_views} Views)"
+    gt_mid = f"Ground Truth ({num_views} Views)"
+    gt_short = f"GT ({num_views}V)"
+
+    tw_full, _ = text_size(gt_full, f_base)
+    tw_mid, _ = text_size(gt_mid, f_base)
+
+    if gt_w >= tw_full + 16:
+        t_lbl, t_font, t_w = gt_full, f_base, tw_full
+    elif gt_w >= tw_mid + 10:
+        t_lbl, t_font, t_w = gt_mid, f_base, tw_mid
+    else:
+        t_lbl, t_font, t_w = gt_short, f_sm, text_size(gt_short, f_sm)[0]
+
+    gt_tx = gt_x + max(6, min(14, (gt_w - t_w) // 2))
+    draw.text((gt_tx, start_y + 6), t_lbl, fill=(80, 220, 130), font=t_font)
+
+
 def create_composite_frame_with_loss(
     sample_img: Image.Image,
     plot_arr: np.ndarray,
@@ -213,7 +311,6 @@ def create_composite_frame_with_loss(
     # Fonts
     f_title = get_font(17, bold=True)
     f_badge = get_font(12, bold=True)
-    f_col = get_font(12, bold=True)
 
     # Top Header Background
     draw.rectangle([(0, 0), (target_width, header_height)], fill=(22, 27, 34))
@@ -254,24 +351,14 @@ def create_composite_frame_with_loss(
     canvas.paste(plot_img, (0, current_y))
     current_y += plot_height + 4
 
-    # Section Labels over Sample Grid
-    draw.rectangle([(0, current_y), (target_width, current_y + labels_height)], fill=(22, 27, 34))
-    draw.line([(0, current_y), (target_width, current_y)], fill=(48, 54, 61), width=1)
-    draw.line([(0, current_y + labels_height), (target_width, current_y + labels_height)], fill=(48, 54, 61), width=1)
-
-    col_span = 1 + 2 * num_views
-    col_w = target_width / col_span
-
-    # [Front Input] label
-    draw.text((10, current_y + 6), "Front Condition", fill=(0, 229, 255), font=f_col)
-
-    # [Generated Multi-Views] label
-    gen_start_x = int(col_w * 1) + 10
-    draw.text((gen_start_x, current_y + 6), f"Generated 360° Multi-Views ({num_views} Views)", fill=(255, 215, 0), font=f_col)
-
-    # [Ground Truth 360°] label
-    gt_start_x = int(col_w * (1 + num_views)) + 10
-    draw.text((gt_start_x, current_y + 6), f"Ground Truth 360° ({num_views} Views)", fill=(80, 220, 130), font=f_col)
+    # Overlap-proof Section Labels over Sample Grid
+    draw_section_header_bar(
+        draw=draw,
+        start_y=current_y,
+        target_width=target_width,
+        labels_height=labels_height,
+        num_views=num_views,
+    )
 
     current_y += labels_height + 4
 
@@ -297,25 +384,14 @@ def create_clean_sample_frame(
     canvas = Image.new("RGB", (target_width, total_height), color=(13, 17, 23))
     draw = ImageDraw.Draw(canvas)
 
-    f_col = get_font(12, bold=True)
-
-    # Section Labels over Sample Grid
-    draw.rectangle([(0, 0), (target_width, labels_height)], fill=(22, 27, 34))
-    draw.line([(0, labels_height), (target_width, labels_height)], fill=(48, 54, 61), width=1)
-
-    col_span = 1 + 2 * num_views
-    col_w = target_width / col_span
-
-    # [Front Input] label
-    draw.text((10, 6), "Front Condition", fill=(0, 229, 255), font=f_col)
-
-    # [Generated Multi-Views] label
-    gen_start_x = int(col_w * 1) + 10
-    draw.text((gen_start_x, 6), f"Generated 360° Multi-Views ({num_views} Views)", fill=(255, 215, 0), font=f_col)
-
-    # [Ground Truth 360°] label
-    gt_start_x = int(col_w * (1 + num_views)) + 10
-    draw.text((gt_start_x, 6), f"Ground Truth 360° ({num_views} Views)", fill=(80, 220, 130), font=f_col)
+    # Overlap-proof Section Labels over Sample Grid
+    draw_section_header_bar(
+        draw=draw,
+        start_y=0,
+        target_width=target_width,
+        labels_height=labels_height,
+        num_views=num_views,
+    )
 
     # Paste Sample Image
     canvas.paste(sample_resized, (0, labels_height + 4))
@@ -352,18 +428,6 @@ def main():
 
     output_gif_path = os.path.join(exp_dir, gif_filename)
 
-    print("================================================================")
-    print(f" Multi-View PixelDiT Training Progress GIF Generator")
-    print("================================================================")
-    print(f"Exp Directory:    {exp_dir}")
-    print(f"Samples Found:    {len(sample_files)} sample grids")
-    print(f"Show Loss Curve:  {args.show_loss}")
-    print(f"Flip Vertical:    {args.flip_vertical}")
-    print(f"FPS:              {args.fps}")
-    print(f"Output Width:     {args.width}px")
-    print(f"Output Target:    {output_gif_path}")
-    print("================================================================")
-
     # Read config.json
     config_path = os.path.join(exp_dir, "config.json")
     cfg = {}
@@ -374,6 +438,25 @@ def main():
     exp_name = os.path.basename(exp_dir.rstrip("/\\"))
     total_max_steps = cfg.get("max_iters", 50000)
     num_views = cfg.get("num_views", 4)
+
+    # Determine adaptive target width: 1200px provides optimal clarity for 25 columns (>6 views)
+    if args.width is not None:
+        target_width = args.width
+    else:
+        target_width = 1200 if num_views > 6 else 880
+
+    print("================================================================")
+    print(f" Multi-View PixelDiT Training Progress GIF Generator")
+    print("================================================================")
+    print(f"Exp Directory:    {exp_dir}")
+    print(f"Samples Found:    {len(sample_files)} sample grids")
+    print(f"Num Views:        {num_views}")
+    print(f"Show Loss Curve:  {args.show_loss}")
+    print(f"Flip Vertical:    {args.flip_vertical}")
+    print(f"FPS:              {args.fps}")
+    print(f"Output Width:     {target_width}px")
+    print(f"Output Target:    {output_gif_path}")
+    print("================================================================")
 
     # Read history.json
     history = {}
@@ -439,7 +522,7 @@ def main():
                     total_steps=total_max_steps,
                     y_min=y_min,
                     y_max=y_max,
-                    plot_width_px=args.width,
+                    plot_width_px=target_width,
                     plot_height_px=plot_height,
                 )
 
@@ -452,14 +535,14 @@ def main():
                     cur_val_loss=cur_val_loss,
                     cur_lr=cur_lr,
                     exp_name=exp_name,
-                    target_width=args.width,
+                    target_width=target_width,
                     num_views=num_views,
                 )
             else:
                 # Pure sample figure with NO loss values
                 composite = create_clean_sample_frame(
                     sample_img=s_img,
-                    target_width=args.width,
+                    target_width=target_width,
                     num_views=num_views,
                 )
 

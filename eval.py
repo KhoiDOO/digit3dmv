@@ -234,7 +234,28 @@ def main():
 
     # Per-View Statistics
     per_view_stats = {}
-    view_names = {0: "45° (Front-Right)", 1: "135° (Back-Right)", 2: "225° (Back-Left)", 3: "315° (Front-Left)"}
+    if len(view_metrics) == 12:
+        view_names = {
+            0: "Eq 45° (El 0°)",
+            1: "Eq 135° (El 0°)",
+            2: "Eq 225° (El 0°)",
+            3: "Eq 315° (El 0°)",
+            4: "Top 45° (El +45°)",
+            5: "Top 135° (El +45°)",
+            6: "Top 225° (El +45°)",
+            7: "Top 315° (El +45°)",
+            8: "Bot 45° (El -45°)",
+            9: "Bot 135° (El -45°)",
+            10: "Bot 225° (El -45°)",
+            11: "Bot 315° (El -45°)",
+        }
+    else:
+        view_names = {
+            0: "45° (Front-Right)",
+            1: "135° (Back-Right)",
+            2: "225° (Back-Left)",
+            3: "315° (Front-Left)",
+        }
     for v_idx in sorted(view_metrics.keys()):
         per_view_stats[v_idx] = {
             "name": view_names.get(v_idx, f"View {v_idx}"),
