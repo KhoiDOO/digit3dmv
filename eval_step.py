@@ -52,7 +52,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--steps", type=int, nargs="+", default=[2, 5, 10, 20, 25, 50, 100], help="List of Euler ODE step counts to evaluate.")
     parser.add_argument("--num_samples", type=int, default=1, help="Number of validation samples per digit class (default: 1 -> 10 samples for classes 0-9).")
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size for evaluation generation.")
-    parser.add_argument("--flip_vertical", action="store_true", default=True, help="Flip input condition to match model native coordinate space if trained prior to upright re-rendering.")
+    parser.add_argument("--flip_vertical", action="store_true", default=False, help="Flip input condition to match model native coordinate space if trained prior to upright re-rendering.")
     parser.add_argument("--save_json", type=str, default=None, help="Path to save benchmark JSON (default: {exp_dir}/ode_steps_benchmark.json).")
     parser.add_argument("--root", type=str, default=None, help="Root directory containing Digit3DMV dataset (default: auto-detects 'data/' or '~/.conquer3d/').")
     parser.add_argument("--use_zip", action="store_true", default=None, help="Force reading dataset from zip archive.")
