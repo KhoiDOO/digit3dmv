@@ -105,6 +105,12 @@
       border: 1px solid rgba(245, 158, 11, 0.35);
     }
 
+    .pill-emerald {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
     .tab-btn {
       background: rgba(255, 255, 255, 0.05);
       color: #94a3b8;
@@ -164,8 +170,8 @@
     .view-card {
       background: rgba(15, 20, 32, 0.9);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      padding: 0.75rem;
+      border-radius: 10px;
+      padding: 0.5rem;
       text-align: center;
       transition: transform 0.2s ease;
     }
@@ -176,16 +182,39 @@
     }
 
     .view-card img {
-      border-radius: 8px;
+      border-radius: 6px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      height: auto;
+      display: block;
     }
 
     .view-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
+    }
+
+    .table-dark-custom {
+      background: rgba(13, 17, 23, 0.8) !important;
+      color: #e2e8f0 !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table-dark-custom th {
+      color: #00f0ff !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+      background: rgba(22, 27, 34, 0.9) !important;
+      font-size: 0.85rem;
+    }
+
+    .table-dark-custom td {
+      border-color: rgba(255, 255, 255, 0.06) !important;
+      font-size: 0.85rem;
     }
   </style>
 </head>
@@ -211,7 +240,7 @@
         </h1>
         
         <p class="subtitle publication-subtitle">
-          A high-performance generative framework for simultaneous 360° multi-view normal and depth map synthesis, combining continuous Euler ODE flow matching, 3D Rotary Position Embeddings (3D-RoPE), and dual-level patch/pixel transformers.
+          A high-performance generative framework for simultaneous 360° multi-view normal and depth map synthesis, combining continuous Euler ODE flow matching, 3D Rotary Position Embeddings (3D-RoPE), and dual-level patch/pixel transformers across 4-view and dense 12-view camera regimes.
         </p>
 
         <!-- Author / Organization -->
@@ -230,65 +259,22 @@
             <i class="fab fa-github"></i>
             <span>Code Repository</span>
           </a>
-          <a href="#qualitative-results" class="btn-action">
-            <i class="fas fa-images"></i>
-            <span>Qualitative Results</span>
-          </a>
-          <a href="#quantitative-diagrams" class="btn-action">
-            <i class="fas fa-chart-line"></i>
-            <span>Quantitative Diagrams</span>
-          </a>
           <a href="#architecture" class="btn-action">
             <i class="fas fa-network-wired"></i>
             <span>Architecture</span>
           </a>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- Hero Teaser: Interactive Training Evolution -->
-  <section class="section py-4">
-    <div class="container is-max-desktop">
-      <div class="card-glass p-5">
-        <div class="level mb-4">
-          <div class="level-left">
-            <div>
-              <h2 class="title is-4 mb-1"><i class="fas fa-film text-gradient mr-2"></i>Multi-View Generative Training Dynamics</h2>
-              <p class="is-size-7 has-text-grey-light">Continuous Euler ODE flow evolution with synchronized loss curves over 50,000 training iterations.</p>
-            </div>
-          </div>
-          <div class="level-right">
-            <div class="buttons are-small">
-              <button class="tab-btn is-active" id="btn-gif-loss" onclick="toggleHeroGif('loss')"><i class="fas fa-chart-area mr-1"></i>With Loss Curve</button>
-              <button class="tab-btn" id="btn-gif-pure" onclick="toggleHeroGif('pure')"><i class="fas fa-eye mr-1"></i>Pure Samples</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="has-text-centered">
-          <img id="hero-gif" src="static/media/training_evolution_with_loss.gif" alt="Training Evolution GIF" style="border-radius: 12px; max-height: 580px; width: 100%; object-fit: contain; box-shadow: 0 8px 30px rgba(0,0,0,0.6);" />
-        </div>
-
-        <!-- Key Metrics Highlights -->
-        <div class="columns is-mobile is-multiline has-text-centered mt-4 pt-2" style="border-top: 1px solid rgba(255,255,255,0.08);">
-          <div class="column is-3-tablet is-6-mobile">
-            <p class="heading has-text-grey">Final Flow Loss</p>
-            <p class="title is-4" style="color: #00f0ff;">0.0433</p>
-          </div>
-          <div class="column is-3-tablet is-6-mobile">
-            <p class="heading has-text-grey">Generation Speed</p>
-            <p class="title is-4" style="color: #ff3366;">25 ODE Steps</p>
-          </div>
-          <div class="column is-3-tablet is-6-mobile">
-            <p class="heading has-text-grey">Training Throughput</p>
-            <p class="title is-4" style="color: #38bdf8;">665 samples/s</p>
-          </div>
-          <div class="column is-3-tablet is-6-mobile">
-            <p class="heading has-text-grey">Multi-View Span</p>
-            <p class="title is-4" style="color: #a855f7;">360° Equatorial</p>
-          </div>
+          <a href="#section-4v" class="btn-action">
+            <i class="fas fa-dice-four"></i>
+            <span>4-View Benchmark</span>
+          </a>
+          <a href="#section-12v" class="btn-action">
+            <i class="fas fa-circle-nodes"></i>
+            <span>12-View Dense Benchmark</span>
+          </a>
+          <a href="#comparison-matrix" class="btn-action">
+            <i class="fas fa-table-list"></i>
+            <span>Model Comparison</span>
+          </a>
         </div>
 
       </div>
@@ -346,7 +332,7 @@
             <text x="110" y="345" fill="#64748b" font-size="10" text-anchor="middle">$\mathbf{c} = \text{SiLU}(t_{\text{emb}} + \mathbf{y}_{\text{emb}})$</text>
 
             <!-- Arrow from inputs to DiT Body -->
-            <path d="M 190 95 L 250 95 L 250 200 L 280 200" stroke="#00f0ff" stroke-width="2" fill="none" marker-end="url(#arrow)" />
+            <path d="M 190 95 L 250 95 L 250 200 L 280 200" stroke="#00f0ff" stroke-width="2" fill="none" />
             <path d="M 190 205 L 280 205" stroke="#f59e0b" stroke-width="2" fill="none" />
             <path d="M 190 315 L 250 315 L 250 210 L 280 210" stroke="#10b981" stroke-width="2" fill="none" />
 
@@ -404,7 +390,7 @@
           <div class="column is-4">
             <div class="p-4" style="background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #00f0ff;">
               <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-compass mr-2" style="color:#00f0ff;"></i>3D-RoPE Embeddings</h4>
-              <p class="is-size-7 has-text-grey-light">Extends rotary position embeddings to 3D space by allocating dedicated rotary frequencies across View Index ($V$) and Image Coordinates ($H, W$).</p>
+              <p class="is-size-7 has-text-grey-light">Dedicated rotary frequencies allocated across camera azimuth view indices ($V$) and spatial image coordinates ($H, W$).</p>
             </div>
           </div>
           <div class="column is-4">
@@ -416,7 +402,7 @@
           <div class="column is-4">
             <div class="p-4" style="background: rgba(255,255,255,0.03); border-radius: 10px; border-left: 3px solid #ec4899;">
               <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-bolt mr-2" style="color:#ec4899;"></i>Flow Matching ODE</h4>
-              <p class="is-size-7 has-text-grey-light">Rectified linear probability paths connecting Gaussian noise directly to multi-view normal distributions in only 25 Euler steps.</p>
+              <p class="is-size-7 has-text-grey-light">Straight probability paths connecting Gaussian noise directly to multi-view normal distributions in only 20–25 Euler integration steps.</p>
             </div>
           </div>
         </div>
@@ -426,185 +412,199 @@
   </section>
 
 
-  <!-- Qualitative Results Section: Interactive Digit Multi-View Inspector -->
-  <section class="section" id="qualitative-results">
+  <!-- =========================================================================
+       SECTION 1: 4-VIEW EQUATORIAL BENCHMARK (V = 4)
+       ========================================================================= -->
+  <section class="section" id="section-4v">
     <div class="container is-max-desktop">
       <div class="card-glass p-6">
+        
         <div class="has-text-centered mb-5">
-          <span class="pill-badge pill-cyan mb-2"><i class="fas fa-cubes mr-2"></i>360° Visual Fidelity</span>
-          <h2 class="title is-3">Qualitative Multi-View Geometry Showcase</h2>
-          <p class="subtitle is-6 has-text-grey-light">Interactive sample browser for generated 360° normal maps across all 10 digit classes (0–9).</p>
+          <span class="pill-badge pill-cyan mb-2"><i class="fas fa-dice-four mr-2"></i>Equatorial Benchmark</span>
+          <h2 class="title is-3">4-View Multi-View Geometry Synthesis ($V=4$)</h2>
+          <p class="subtitle is-6 has-text-grey-light">Simultaneous 4-camera normal synthesis at canonical $45^\circ, 135^\circ, 225^\circ, 315^\circ$ azimuth viewpoints.</p>
         </div>
 
-        <!-- Class Selector Buttons -->
-        <div class="has-text-centered mb-5">
-          <p class="heading has-text-grey mb-2">Select Digit Class:</p>
-          <div id="digit-selector-group">
-            <!-- Render 0 to 9 buttons -->
-            <button class="digit-btn is-active" onclick="selectClass(0)">0</button>
-            <button class="digit-btn" onclick="selectClass(1)">1</button>
-            <button class="digit-btn" onclick="selectClass(2)">2</button>
-            <button class="digit-btn" onclick="selectClass(3)">3</button>
-            <button class="digit-btn" onclick="selectClass(4)">4</button>
-            <button class="digit-btn" onclick="selectClass(5)">5</button>
-            <button class="digit-btn" onclick="selectClass(6)">6</button>
-            <button class="digit-btn" onclick="selectClass(7)">7</button>
-            <button class="digit-btn" onclick="selectClass(8)">8</button>
-            <button class="digit-btn" onclick="selectClass(9)">9</button>
-          </div>
-        </div>
-
-        <!-- Active Class Multi-View Cards -->
-        <div class="columns is-multiline is-mobile mb-4" id="views-grid">
-          <!-- Front Input -->
-          <div class="column is-2-tablet is-4-mobile">
-            <div class="view-card" style="border-color: rgba(6,182,212,0.5);">
-              <img id="img-front" src="static/media/views/class_0/0_10/front_condition.png" alt="Front Condition" />
-              <div class="view-label" style="color: #06b6d4;">Front Input</div>
-            </div>
-          </div>
-          <!-- View 0 (45°) -->
-          <div class="column is-2-tablet is-4-mobile">
-            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
-              <img id="img-gen-0" src="static/media/views/class_0/0_10/gen_view_00.png" alt="Gen View 45°" />
-              <div class="view-label" style="color: #ffd700;">Gen 45°</div>
-            </div>
-          </div>
-          <!-- View 1 (135°) -->
-          <div class="column is-2-tablet is-4-mobile">
-            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
-              <img id="img-gen-1" src="static/media/views/class_0/0_10/gen_view_01.png" alt="Gen View 135°" />
-              <div class="view-label" style="color: #ffd700;">Gen 135°</div>
-            </div>
-          </div>
-          <!-- View 2 (225°) -->
-          <div class="column is-2-tablet is-4-mobile">
-            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
-              <img id="img-gen-2" src="static/media/views/class_0/0_10/gen_view_02.png" alt="Gen View 225°" />
-              <div class="view-label" style="color: #ffd700;">Gen 225°</div>
-            </div>
-          </div>
-          <!-- View 3 (315°) -->
-          <div class="column is-2-tablet is-4-mobile">
-            <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
-              <img id="img-gen-3" src="static/media/views/class_0/0_10/gen_view_03.png" alt="Gen View 315°" />
-              <div class="view-label" style="color: #ffd700;">Gen 315°</div>
-            </div>
-          </div>
-          <!-- Ground Truth Summary Strip -->
-          <div class="column is-2-tablet is-4-mobile">
-            <div class="view-card" style="border-color: rgba(80,220,130,0.5);">
-              <img id="img-gt-0" src="static/media/views/class_0/0_10/gt_view_00.png" alt="GT View 45°" />
-              <div class="view-label" style="color: #50dc82;">GT 45° (Ref)</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Full Comparison Strip Image for Class -->
-        <div class="p-3 mb-5" style="background: rgba(13,17,23,0.8); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
-          <p class="heading has-text-grey mb-2"><i class="fas fa-columns mr-1"></i>Full Comparison Strip [Front | Generated 360° | Ground Truth 360°]:</p>
-          <img id="img-grid-strip" src="static/media/grids/sample_0001_class_0_0_10.png" alt="Full Strip" style="width: 100%; border-radius: 8px;" />
-        </div>
-
-        <!-- Master Contact Sheet Preview -->
-        <div class="p-4" style="background: rgba(22, 27, 34, 0.6); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+        <!-- 4V Hero GIF -->
+        <div class="card-glass p-4 mb-5" style="background: rgba(13, 17, 23, 0.8);">
           <div class="level mb-3">
             <div class="level-left">
-              <h4 class="title is-6 has-text-white mb-0"><i class="fas fa-table-cells text-gradient mr-2"></i>Full 10-Class Multi-View Matrix (All Digits 0–9)</h4>
+              <h3 class="title is-5 mb-0"><i class="fas fa-film text-gradient mr-2"></i>4-View Generative Training Dynamics</h3>
             </div>
             <div class="level-right">
-              <a href="static/media/all_samples_grid.png" target="_blank" class="button is-small is-dark is-outlined" style="color:#00f0ff; border-color:#00f0ff;">
-                <i class="fas fa-expand mr-1"></i>Open Full Matrix
-              </a>
+              <div class="buttons are-small">
+                <button class="tab-btn is-active" id="btn-4v-loss" onclick="toggleGif4V('loss')"><i class="fas fa-chart-area mr-1"></i>With Loss Curve</button>
+                <button class="tab-btn" id="btn-4v-pure" onclick="toggleGif4V('pure')"><i class="fas fa-eye mr-1"></i>Pure Samples</button>
+              </div>
             </div>
           </div>
-          <img src="static/media/all_samples_grid.png" alt="All Samples Grid" style="width: 100%; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.5);" />
+          <div class="has-text-centered">
+            <img id="gif-4v" src="static/media/normal_4/training_evolution_with_loss.gif" alt="4V Training Evolution" style="border-radius: 10px; max-height: 520px; width: 100%; object-fit: contain; box-shadow: 0 6px 25px rgba(0,0,0,0.6);" />
+          </div>
         </div>
 
-      </div>
-    </div>
-  </section>
-
-
-  <!-- Quantitative Diagrams Section -->
-  <section class="section" id="quantitative-diagrams">
-    <div class="container is-max-desktop">
-      <div class="card-glass p-6">
-        <div class="has-text-centered mb-5">
-          <span class="pill-badge pill-pink mb-2"><i class="fas fa-chart-pie mr-2"></i>Quantitative Rigor</span>
-          <h2 class="title is-3">Experimental Analysis & Empirical Benchmark Diagrams</h2>
-          <p class="subtitle is-6 has-text-grey-light">Exhaustive quantitative diagrams showcasing loss convergence, throughput scaling, and ODE trajectory stability.</p>
+        <!-- 4V Metric Badges -->
+        <div class="columns is-mobile is-multiline has-text-centered mb-5 p-3" style="background: rgba(22, 27, 34, 0.6); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Final Flow Loss</p>
+            <p class="title is-5" style="color: #00f0ff;">0.0433</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Normal PSNR</p>
+            <p class="title is-5" style="color: #10b981;">23.03 dB</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Mean Error (MAE)</p>
+            <p class="title is-5" style="color: #ff3366;">7.76°</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Median Error (MedAE)</p>
+            <p class="title is-5" style="color: #a855f7;">1.08°</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Acc &lt; 22.5°</p>
+            <p class="title is-5" style="color: #f59e0b;">92.6%</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Cosine Similarity</p>
+            <p class="title is-5" style="color: #06b6d4;">97.67%</p>
+          </div>
         </div>
 
-        <div class="columns is-multiline">
+        <!-- 4V Qualitative Browser -->
+        <div class="mb-5">
+          <h4 class="title is-5 mb-2"><i class="fas fa-images text-gradient mr-2"></i>Interactive 4-View Digit Browser</h4>
+          <p class="is-size-7 has-text-grey-light mb-3">Select digit class (0–9) to inspect generated 4-view surface normals vs. ground truth.</p>
           
-          <!-- Diagram 1: Loss Convergence Curve -->
-          <div class="column is-6">
-            <div class="p-4 card-glass" style="height: 100%;">
-              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-chart-line mr-2" style="color:#00f0ff;"></i>Training & Validation Convergence</h4>
-              <p class="is-size-7 has-text-grey-light mb-3">Rectified Flow loss smoothly decreases from 8.75 down to 0.1158 with zero divergence or mode collapse.</p>
-              <div style="height: 250px;">
-                <canvas id="chart-loss"></canvas>
+          <!-- Digit Selector Buttons -->
+          <div class="has-text-centered mb-4" id="digit-selector-4v">
+            <button class="digit-btn is-active" onclick="selectClass4V(0)">0</button>
+            <button class="digit-btn" onclick="selectClass4V(1)">1</button>
+            <button class="digit-btn" onclick="selectClass4V(2)">2</button>
+            <button class="digit-btn" onclick="selectClass4V(3)">3</button>
+            <button class="digit-btn" onclick="selectClass4V(4)">4</button>
+            <button class="digit-btn" onclick="selectClass4V(5)">5</button>
+            <button class="digit-btn" onclick="selectClass4V(6)">6</button>
+            <button class="digit-btn" onclick="selectClass4V(7)">7</button>
+            <button class="digit-btn" onclick="selectClass4V(8)">8</button>
+            <button class="digit-btn" onclick="selectClass4V(9)">9</button>
+          </div>
+
+          <!-- 4V Views Strip Cards -->
+          <div class="columns is-multiline is-mobile mb-3">
+            <div class="column is-2-tablet is-4-mobile">
+              <div class="view-card" style="border-color: rgba(6,182,212,0.5);">
+                <img id="img-4v-front" src="static/media/normal_4/views/class_0/0_10/front_condition.png" alt="Front Condition" />
+                <div class="view-label" style="color: #06b6d4;">Front Input</div>
+              </div>
+            </div>
+            <div class="column is-2-tablet is-4-mobile">
+              <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+                <img id="img-4v-gen0" src="static/media/normal_4/views/class_0/0_10/gen_view_00.png" alt="Gen 45°" />
+                <div class="view-label" style="color: #ffd700;">Gen 45°</div>
+              </div>
+            </div>
+            <div class="column is-2-tablet is-4-mobile">
+              <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+                <img id="img-4v-gen1" src="static/media/normal_4/views/class_0/0_10/gen_view_01.png" alt="Gen 135°" />
+                <div class="view-label" style="color: #ffd700;">Gen 135°</div>
+              </div>
+            </div>
+            <div class="column is-2-tablet is-4-mobile">
+              <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+                <img id="img-4v-gen2" src="static/media/normal_4/views/class_0/0_10/gen_view_02.png" alt="Gen 225°" />
+                <div class="view-label" style="color: #ffd700;">Gen 225°</div>
+              </div>
+            </div>
+            <div class="column is-2-tablet is-4-mobile">
+              <div class="view-card" style="border-color: rgba(255,215,0,0.5);">
+                <img id="img-4v-gen3" src="static/media/normal_4/views/class_0/0_10/gen_view_03.png" alt="Gen 315°" />
+                <div class="view-label" style="color: #ffd700;">Gen 315°</div>
+              </div>
+            </div>
+            <div class="column is-2-tablet is-4-mobile">
+              <div class="view-card" style="border-color: rgba(80,220,130,0.5);">
+                <img id="img-4v-gt0" src="static/media/normal_4/views/class_0/0_10/gt_view_00.png" alt="GT Ref" />
+                <div class="view-label" style="color: #50dc82;">GT 45° Ref</div>
               </div>
             </div>
           </div>
 
-          <!-- Diagram 2: Patch Size Throughput Scaling -->
-          <div class="column is-6">
-            <div class="p-4 card-glass" style="height: 100%;">
-              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-gauge-high mr-2" style="color:#a855f7;"></i>Throughput vs Patch Size Scaling</h4>
-              <p class="is-size-7 has-text-grey-light mb-3">Self-attention token reduction ($N \propto 1/P^2$) accelerates training throughput from 50 to 200+ iters/s.</p>
-              <div style="height: 250px;">
-                <canvas id="chart-throughput"></canvas>
-              </div>
-            </div>
+          <!-- Full Comparison Strip Image for 4V -->
+          <div class="p-3 mb-4" style="background: rgba(13,17,23,0.8); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+            <p class="heading has-text-grey mb-2"><i class="fas fa-columns mr-1"></i>Full Comparison Strip [Front | Generated 45°, 135°, 225°, 315° | Ground Truth 45°, 135°, 225°, 315°]:</p>
+            <img id="img-4v-strip" src="static/media/normal_4/grids/sample_0001_class_0_0_10.png" alt="Full Strip 4V" style="width: 100%; border-radius: 6px;" />
           </div>
 
-          <!-- Diagram 3: ODE Integration Step Quality -->
-          <div class="column is-6">
-            <div class="p-4 card-glass" style="height: 100%;">
-              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-route mr-2" style="color:#ff3366;"></i>ODE Sampling Steps vs. Normal PSNR &amp; Angular Error (°)</h4>
-              <p class="is-size-7 has-text-grey-light mb-3">Straight Rectified Flow trajectories saturate peak PSNR (23.37 dB) and low angular error (MedAE 0.90°, MAE 7.50°) in only 5–10 Euler steps.</p>
-              <div style="height: 250px;">
-                <canvas id="chart-ode"></canvas>
-              </div>
-            </div>
+          <!-- 4V 10-Class Master Matrix Link -->
+          <div class="has-text-centered">
+            <a href="static/media/normal_4/all_samples_grid.png" target="_blank" class="button is-small is-dark is-outlined" style="color:#00f0ff; border-color:#00f0ff;">
+              <i class="fas fa-expand mr-1"></i>Open Full 4-View Matrix (All Digits 0–9)
+            </a>
           </div>
-
-          <!-- Diagram 4: Multi-View Consistency Radar -->
-          <div class="column is-6">
-            <div class="p-4 card-glass" style="height: 100%;">
-              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-crosshairs mr-2" style="color:#10b981;"></i>Cross-View Geometric Alignment Radar</h4>
-              <p class="is-size-7 has-text-grey-light mb-3">High angular correlation across all 4 canonical camera positions ($45^\circ, 135^\circ, 225^\circ, 315^\circ$).</p>
-              <div style="height: 250px;">
-                <canvas id="chart-radar"></canvas>
-              </div>
-            </div>
-          </div>
-
         </div>
 
-        <!-- Training Milestones Progress Timeline -->
-        <div class="mt-5 p-4" style="background: rgba(13,17,23,0.8); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
-          <h4 class="title is-6 has-text-white mb-3"><i class="fas fa-clock-rotate-left mr-2" style="color:#f59e0b;"></i>Multi-View Geometry Emergence Timeline</h4>
+        <!-- 4V Quantitative Figures (Chart.js) -->
+        <div class="columns is-multiline mb-5">
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-chart-line mr-2" style="color:#00f0ff;"></i>4V Training &amp; Validation Loss Convergence</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Empirical 50k steps descent from 8.49 down to 0.0433.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-4v-loss"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-route mr-2" style="color:#ff3366;"></i>4V ODE Steps vs. PSNR &amp; Angular Error (°)</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Euler ODE step sweep saturating peak PSNR (23.37 dB) in 5–10 steps.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-4v-ode"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-crosshairs mr-2" style="color:#10b981;"></i>4V Cross-View Geometric Alignment Radar</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">High angular correlation across canonical viewpoints ($45^\circ, 135^\circ, 225^\circ, 315^\circ$).</p>
+              <div style="height: 240px;">
+                <canvas id="chart-4v-radar"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-gauge-high mr-2" style="color:#a855f7;"></i>Throughput Scaling vs. Patch Tokenization</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Token complexity reduction ($N \propto 1/P^2$) accelerating training throughput.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-4v-throughput"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4V Emergence Timeline -->
+        <div class="p-4" style="background: rgba(13,17,23,0.8); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <h4 class="title is-6 has-text-white mb-3"><i class="fas fa-clock-rotate-left mr-2" style="color:#f59e0b;"></i>4-View Geometry Emergence Timeline (50k Steps)</h4>
           <div class="columns is-mobile is-multiline has-text-centered">
             <div class="column is-3-tablet is-6-mobile">
-              <img src="static/media/step_01k.png" alt="Step 1k" style="border-radius: 6px; width: 100%;" />
+              <img src="static/media/step_01k.png" alt="4V Step 1k" style="border-radius: 6px; width: 100%;" />
               <p class="is-size-7 has-text-info mt-1">Step 1,000 (Loss: 8.490)</p>
               <p class="is-size-7 has-text-grey">Initial silhouette formation</p>
             </div>
             <div class="column is-3-tablet is-6-mobile">
-              <img src="static/media/step_10k.png" alt="Step 10k" style="border-radius: 6px; width: 100%;" />
+              <img src="static/media/step_10k.png" alt="4V Step 10k" style="border-radius: 6px; width: 100%;" />
               <p class="is-size-7 has-text-info mt-1">Step 10,000 (Loss: 1.754)</p>
               <p class="is-size-7 has-text-grey">3D structure emerges</p>
             </div>
             <div class="column is-3-tablet is-6-mobile">
-              <img src="static/media/step_25k.png" alt="Step 25k" style="border-radius: 6px; width: 100%;" />
+              <img src="static/media/step_25k.png" alt="4V Step 25k" style="border-radius: 6px; width: 100%;" />
               <p class="is-size-7 has-text-info mt-1">Step 25,000 (Loss: 0.226)</p>
               <p class="is-size-7 has-text-grey">Surface normals refine</p>
             </div>
             <div class="column is-3-tablet is-6-mobile">
-              <img src="static/media/step_50k.png" alt="Step 50k" style="border-radius: 6px; width: 100%;" />
+              <img src="static/media/step_50k.png" alt="4V Step 50k" style="border-radius: 6px; width: 100%;" />
               <p class="is-size-7 has-text-success mt-1">Step 50,000 (Loss: 0.043)</p>
               <p class="is-size-7 has-text-grey">Sharp 360° geometry</p>
             </div>
@@ -616,6 +616,415 @@
   </section>
 
 
+  <!-- =========================================================================
+       SECTION 2: 12-VIEW DENSE BENCHMARK (V = 12)
+       ========================================================================= -->
+  <section class="section" id="section-12v">
+    <div class="container is-max-desktop">
+      <div class="card-glass p-6">
+        
+        <div class="has-text-centered mb-5">
+          <span class="pill-badge pill-pink mb-2"><i class="fas fa-circle-nodes mr-2"></i>Spherical 3D Benchmark</span>
+          <h2 class="title is-3">12-View Full-Sphere Multi-View Geometry Synthesis ($V=12$)</h2>
+          <p class="subtitle is-6 has-text-grey-light">Full spatial spherical synthesis across 3 elevation rings ($0^\circ, +45^\circ, -45^\circ$) and 4 azimuth quadrants ($45^\circ, 135^\circ, 225^\circ, 315^\circ$).</p>
+        </div>
+
+        <!-- 12V Hero GIF -->
+        <div class="card-glass p-4 mb-5" style="background: rgba(13, 17, 23, 0.8);">
+          <div class="level mb-3">
+            <div class="level-left">
+              <h3 class="title is-5 mb-0"><i class="fas fa-film text-gradient mr-2"></i>12-View Dense Training Dynamics</h3>
+            </div>
+            <div class="level-right">
+              <div class="buttons are-small">
+                <button class="tab-btn is-active" id="btn-12v-loss" onclick="toggleGif12V('loss')"><i class="fas fa-chart-area mr-1"></i>With Loss Curve</button>
+                <button class="tab-btn" id="btn-12v-pure" onclick="toggleGif12V('pure')"><i class="fas fa-eye mr-1"></i>Pure Samples</button>
+              </div>
+            </div>
+          </div>
+          <div class="has-text-centered">
+            <img id="gif-12v" src="static/media/normal_12/training_evolution_with_loss.gif" alt="12V Training Evolution" style="border-radius: 10px; max-height: 540px; width: 100%; object-fit: contain; box-shadow: 0 6px 25px rgba(0,0,0,0.6);" />
+          </div>
+        </div>
+
+        <!-- 12V Metric Badges -->
+        <div class="columns is-mobile is-multiline has-text-centered mb-5 p-3" style="background: rgba(22, 27, 34, 0.6); border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Final Flow Loss</p>
+            <p class="title is-5" style="color: #00f0ff;">0.0291</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Normal PSNR</p>
+            <p class="title is-5" style="color: #10b981;">25.75 dB</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Mean Error (MAE)</p>
+            <p class="title is-5" style="color: #ff3366;">5.50°</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Median Error (MedAE)</p>
+            <p class="title is-5" style="color: #a855f7;">1.10°</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Acc &lt; 22.5°</p>
+            <p class="title is-5" style="color: #f59e0b;">96.5%</p>
+          </div>
+          <div class="column is-2-tablet is-4-mobile">
+            <p class="heading has-text-grey">Structural SSIM</p>
+            <p class="title is-5" style="color: #06b6d4;">0.9642</p>
+          </div>
+        </div>
+
+        <!-- 12V Qualitative Browser -->
+        <div class="mb-5">
+          <div class="level mb-2">
+            <div class="level-left">
+              <h4 class="title is-5 mb-0"><i class="fas fa-images text-gradient mr-2"></i>Interactive 12-View Spherical Digit Browser</h4>
+            </div>
+            <div class="level-right">
+              <div class="buttons are-small">
+                <button class="tab-btn is-active" id="btn-12v-mode-gen" onclick="set12VMode('gen')"><i class="fas fa-wand-magic-sparkles mr-1"></i>Generated (12 Views)</button>
+                <button class="tab-btn" id="btn-12v-mode-gt" onclick="set12VMode('gt')"><i class="fas fa-cube mr-1"></i>Ground Truth (12 Views)</button>
+              </div>
+            </div>
+          </div>
+          <p class="is-size-7 has-text-grey-light mb-3">Select digit class (0–9) to inspect full 12-view spherical normal geometry across Top ($+45^\circ$), Equatorial ($0^\circ$), and Bottom ($-45^\circ$) elevation rings.</p>
+          
+          <!-- Digit Selector Buttons -->
+          <div class="has-text-centered mb-4" id="digit-selector-12v">
+            <button class="digit-btn is-active" onclick="selectClass12V(0)">0</button>
+            <button class="digit-btn" onclick="selectClass12V(1)">1</button>
+            <button class="digit-btn" onclick="selectClass12V(2)">2</button>
+            <button class="digit-btn" onclick="selectClass12V(3)">3</button>
+            <button class="digit-btn" onclick="selectClass12V(4)">4</button>
+            <button class="digit-btn" onclick="selectClass12V(5)">5</button>
+            <button class="digit-btn" onclick="selectClass12V(6)">6</button>
+            <button class="digit-btn" onclick="selectClass12V(7)">7</button>
+            <button class="digit-btn" onclick="selectClass12V(8)">8</button>
+            <button class="digit-btn" onclick="selectClass12V(9)">9</button>
+          </div>
+
+          <!-- Main 12-View Interactive Spherical Stage -->
+          <div class="columns is-multiline mb-3">
+            <!-- Left: Front Conditioning Input Hero Card -->
+            <div class="column is-3-tablet is-12-mobile">
+              <div class="view-card p-3" style="background: rgba(16, 24, 38, 0.9); border: 1.5px solid rgba(6, 182, 212, 0.6); height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="heading has-text-info mb-2" style="font-weight: 700; letter-spacing: 0.05em;"><i class="fas fa-camera mr-1"></i>Front Input Condition</div>
+                <img id="img-12v-front" src="static/media/normal_12/views/class_0/0_10/front_condition.png" alt="Front Condition" style="max-width: 140px; border-radius: 8px; box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);" />
+                <div class="view-label mt-2" style="color: #06b6d4;">Azimuth 0° &bull; Elevation 0°</div>
+                <p class="is-size-7 has-text-grey mt-2 has-text-centered">Single Conditioning Normal Map</p>
+              </div>
+            </div>
+
+            <!-- Right: 3x4 Elevation Spherical Matrix (12 Views) -->
+            <div class="column is-9-tablet is-12-mobile">
+              
+              <!-- Ring 1: Top-Down Elevation (+45°) -->
+              <div class="mb-3 p-2" style="background: rgba(22, 27, 34, 0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-1 px-1">
+                  <span class="is-size-7 has-text-warning font-weight-bold"><i class="fas fa-arrow-up mr-1"></i>Top-Down Ring (Elevation: +45°)</span>
+                  <span class="is-size-7 has-text-grey">45°, 135°, 225°, 315°</span>
+                </div>
+                <div class="columns is-mobile is-gapless mb-0">
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v4" src="static/media/normal_12/views/class_0/0_10/gen_view_04.png" alt="Top 45°" />
+                      <div class="view-label" id="lbl-12v-v4" style="color: #ffd700;">Top 45°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v5" src="static/media/normal_12/views/class_0/0_10/gen_view_05.png" alt="Top 135°" />
+                      <div class="view-label" id="lbl-12v-v5" style="color: #ffd700;">Top 135°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v6" src="static/media/normal_12/views/class_0/0_10/gen_view_06.png" alt="Top 225°" />
+                      <div class="view-label" id="lbl-12v-v6" style="color: #ffd700;">Top 225°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v7" src="static/media/normal_12/views/class_0/0_10/gen_view_07.png" alt="Top 315°" />
+                      <div class="view-label" id="lbl-12v-v7" style="color: #ffd700;">Top 315°</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ring 2: Equatorial Elevation (0°) -->
+              <div class="mb-3 p-2" style="background: rgba(22, 27, 34, 0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-1 px-1">
+                  <span class="is-size-7 has-text-info font-weight-bold"><i class="fas fa-arrows-left-right mr-1"></i>Equatorial Ring (Elevation: 0°)</span>
+                  <span class="is-size-7 has-text-grey">45°, 135°, 225°, 315°</span>
+                </div>
+                <div class="columns is-mobile is-gapless mb-0">
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v0" src="static/media/normal_12/views/class_0/0_10/gen_view_00.png" alt="Eq 45°" />
+                      <div class="view-label" id="lbl-12v-v0" style="color: #00f0ff;">Eq 45°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v1" src="static/media/normal_12/views/class_0/0_10/gen_view_01.png" alt="Eq 135°" />
+                      <div class="view-label" id="lbl-12v-v1" style="color: #00f0ff;">Eq 135°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v2" src="static/media/normal_12/views/class_0/0_10/gen_view_02.png" alt="Eq 225°" />
+                      <div class="view-label" id="lbl-12v-v2" style="color: #00f0ff;">Eq 225°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v3" src="static/media/normal_12/views/class_0/0_10/gen_view_03.png" alt="Eq 315°" />
+                      <div class="view-label" id="lbl-12v-v3" style="color: #00f0ff;">Eq 315°</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Ring 3: Bottom-Up Elevation (-45°) -->
+              <div class="p-2" style="background: rgba(22, 27, 34, 0.6); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+                <div class="is-flex is-justify-content-space-between is-align-items-center mb-1 px-1">
+                  <span class="is-size-7 has-text-success font-weight-bold"><i class="fas fa-arrow-down mr-1"></i>Bottom-Up Ring (Elevation: -45°)</span>
+                  <span class="is-size-7 has-text-grey">45°, 135°, 225°, 315°</span>
+                </div>
+                <div class="columns is-mobile is-gapless mb-0">
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v8" src="static/media/normal_12/views/class_0/0_10/gen_view_08.png" alt="Bot 45°" />
+                      <div class="view-label" id="lbl-12v-v8" style="color: #50dc82;">Bot 45°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v9" src="static/media/normal_12/views/class_0/0_10/gen_view_09.png" alt="Bot 135°" />
+                      <div class="view-label" id="lbl-12v-v9" style="color: #50dc82;">Bot 135°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v10" src="static/media/normal_12/views/class_0/0_10/gen_view_10.png" alt="Bot 225°" />
+                      <div class="view-label" id="lbl-12v-v10" style="color: #50dc82;">Bot 225°</div>
+                    </div>
+                  </div>
+                  <div class="column is-3 px-1">
+                    <div class="view-card p-1">
+                      <img id="img-12v-v11" src="static/media/normal_12/views/class_0/0_10/gen_view_11.png" alt="Bot 315°" />
+                      <div class="view-label" id="lbl-12v-v11" style="color: #50dc82;">Bot 315°</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Full Comparison Strip Image for 12V -->
+          <div class="p-3 mb-4" style="background: rgba(13,17,23,0.8); border-radius: 10px; border: 1px solid rgba(255,255,255,0.06);">
+            <p class="heading has-text-grey mb-2"><i class="fas fa-columns mr-1"></i>Full 25-Column Spherical Strip [Front Input | 12 Generated Views (Top: +45°, Eq: 0°, Bot: -45°) | 12 Ground Truth Views]:</p>
+            <img id="img-12v-strip" src="static/media/normal_12/grids/sample_0001_class_0_0_10.png" alt="Full Strip 12V" style="width: 100%; border-radius: 6px;" />
+          </div>
+
+          <!-- 12V 10-Class Master Matrix Link -->
+          <div class="has-text-centered">
+            <a href="static/media/normal_12/all_samples_grid.png" target="_blank" class="button is-small is-dark is-outlined" style="color:#ec4899; border-color:#ec4899;">
+              <i class="fas fa-expand mr-1"></i>Open Full 12-View Spherical Matrix (All Digits 0–9)
+            </a>
+          </div>
+        </div>
+
+        <!-- 12V Quantitative Figures (Chart.js) -->
+        <div class="columns is-multiline mb-5">
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-chart-line mr-2" style="color:#00f0ff;"></i>12V Training &amp; Validation Loss Convergence (100k Steps)</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Extended 100,000 steps continuous convergence down to 0.0291.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-12v-loss"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-route mr-2" style="color:#ff3366;"></i>12V ODE Steps vs. PSNR &amp; Angular Error (°)</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Consistent &gt;25.7 dB reconstruction PSNR across all Euler step counts.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-12v-ode"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-circle-notch mr-2" style="color:#10b981;"></i>12-View Full-Sphere Multi-View Angular Consistency Radar</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Empirical cosine similarity and &gt;96% angular accuracy across Equatorial ($El = 0^\circ$), Top-Down ($El = +45^\circ$), and Bottom-Up ($El = -45^\circ$) camera rings.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-12v-radar"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="column is-6">
+            <div class="p-4 card-glass" style="height: 100%;">
+              <h4 class="title is-6 has-text-white mb-2"><i class="fas fa-table-cells mr-2" style="color:#a855f7;"></i>Per-Digit Class Performance Breakdown</h4>
+              <p class="is-size-7 has-text-grey-light mb-3">Mean normal PSNR (dB) and MAE (°) evaluated across digit classes 0–9.</p>
+              <div style="height: 240px;">
+                <canvas id="chart-12v-classes"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 12V Emergence Timeline -->
+        <div class="p-4" style="background: rgba(13,17,23,0.8); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);">
+          <h4 class="title is-6 has-text-white mb-3"><i class="fas fa-clock-rotate-left mr-2" style="color:#f59e0b;"></i>12-View Dense Geometry Emergence Timeline (100k Steps)</h4>
+          <div class="columns is-mobile is-multiline has-text-centered">
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/normal_12/step_001k.png" alt="12V Step 1k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-info mt-1">Step 1,000 (Loss: 8.553)</p>
+              <p class="is-size-7 has-text-grey">Initial multi-view silhouette</p>
+            </div>
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/normal_12/step_025k.png" alt="12V Step 25k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-info mt-1">Step 25,000 (Loss: 0.301)</p>
+              <p class="is-size-7 has-text-grey">Dense circular coherence</p>
+            </div>
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/normal_12/step_050k.png" alt="12V Step 50k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-info mt-1">Step 50,000 (Loss: 0.038)</p>
+              <p class="is-size-7 has-text-grey">High-frequency normal maps</p>
+            </div>
+            <div class="column is-3-tablet is-6-mobile">
+              <img src="static/media/normal_12/step_100k.png" alt="12V Step 100k" style="border-radius: 6px; width: 100%;" />
+              <p class="is-size-7 has-text-success mt-1">Step 100,000 (Loss: 0.029)</p>
+              <p class="is-size-7 has-text-grey">Watertight 360° geometry</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       SECTION 3: COMPREHENSIVE BENCHMARK MATRIX (4V vs 12V)
+       ========================================================================= -->
+  <section class="section" id="comparison-matrix">
+    <div class="container is-max-desktop">
+      <div class="card-glass p-6">
+        
+        <div class="has-text-centered mb-5">
+          <span class="pill-badge pill-purple mb-2"><i class="fas fa-table-list mr-2"></i>Comparative Audit</span>
+          <h2 class="title is-3">Comprehensive Model Benchmark: 4 Views vs. 12 Views</h2>
+          <p class="subtitle is-6 has-text-grey-light">Architectural compute scaling, sequence length, and empirical geometric fidelity.</p>
+        </div>
+
+        <div class="table-container mb-5">
+          <table class="table is-fullwidth table-dark-custom">
+            <thead>
+              <tr>
+                <th>Benchmark Metric</th>
+                <th>4-View Model ($V=4$)</th>
+                <th>12-View Model ($V=12$)</th>
+                <th>Relative Scaling / Delta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Model Parameters</strong></td>
+                <td>$14.02 \text{ M}$</td>
+                <td><strong>$47.27 \text{ M}$</strong></td>
+                <td><span class="has-text-success">$3.37\times$ Parameter Capacity</span></td>
+              </tr>
+              <tr>
+                <td><strong>Patch Transformer Hidden Size</strong></td>
+                <td>$d = 256$ ($8$ heads)</td>
+                <td>$d = 512$ ($8$ heads)</td>
+                <td><span class="has-text-info">$2\times$ Wider Feature Dimension</span></td>
+              </tr>
+              <tr>
+                <td><strong>Camera Viewpoints &amp; Coverage</strong></td>
+                <td>4 Equatorial Views ($45^\circ, 135^\circ, 225^\circ, 315^\circ$, $El = 0^\circ$)</td>
+                <td>12 Spherical Views: 4 Azimuths $\times$ 3 Elevations ($0^\circ, +45^\circ, -45^\circ$)</td>
+                <td><span class="has-text-info">Full Spatial Sphere (Top/Eq/Bot)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Sequence Context ($V \times L$)</strong></td>
+                <td>$4 \times 256 = 1,024$ tokens</td>
+                <td>$12 \times 256 = 3,072$ tokens</td>
+                <td><span class="has-text-warning">$3\times$ Context Length</span></td>
+              </tr>
+              <tr>
+                <td><strong>Self-Attention Complexity</strong></td>
+                <td>$\mathcal{O}(1024^2) = 1.05\text{M}$ pairs</td>
+                <td>$\mathcal{O}(3072^2) = 9.44\text{M}$ pairs</td>
+                <td><span class="has-text-warning">$9\times$ Attention Compute</span></td>
+              </tr>
+              <tr>
+                <td><strong>Training Steps &amp; Compute</strong></td>
+                <td>$50,000$ iterations ($1\times$ baseline)</td>
+                <td>$100,000$ iterations ($\approx 18\times$ total FLOPs)</td>
+                <td><span class="has-text-warning">Extended 100k Schedule</span></td>
+              </tr>
+              <tr>
+                <td><strong>Final Convergence Flow Loss</strong></td>
+                <td>$0.0433$</td>
+                <td><strong>$0.0291$</strong></td>
+                <td><span class="has-text-success">-32.8% Lower Loss</span></td>
+              </tr>
+              <tr>
+                <td><strong>Normal PSNR (dB)</strong></td>
+                <td>$23.03 \text{ dB}$</td>
+                <td><strong>$25.75 \text{ dB}$</strong></td>
+                <td><span class="has-text-success">+2.72 dB Higher Fidelity</span></td>
+              </tr>
+              <tr>
+                <td><strong>Mean Angular Error (MAE)</strong></td>
+                <td>$7.76^\circ$</td>
+                <td><strong>$5.50^\circ$</strong></td>
+                <td><span class="has-text-success">-2.26° (29.1% Error Reduction)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Median Angular Error (MedAE)</strong></td>
+                <td>$1.08^\circ$</td>
+                <td><strong>$1.10^\circ$</strong></td>
+                <td><span class="has-text-info">&lt; 1.1° Precise Core</span></td>
+              </tr>
+              <tr>
+                <td><strong>Angular Accuracy (&lt; 11.25°)</strong></td>
+                <td>$81.7\%$</td>
+                <td><strong>$89.0\%$</strong></td>
+                <td><span class="has-text-success">+7.3% Surface Coverage</span></td>
+              </tr>
+              <tr>
+                <td><strong>Angular Accuracy (&lt; 22.5°)</strong></td>
+                <td>$92.6\%$</td>
+                <td><strong>$96.5\%$</strong></td>
+                <td><span class="has-text-success">+3.9% Surface Coverage</span></td>
+              </tr>
+              <tr>
+                <td><strong>Structural Similarity (SSIM)</strong></td>
+                <td>$0.9338$</td>
+                <td><strong>$0.9642$</strong></td>
+                <td><span class="has-text-success">+0.0304 Sharper Contours</span></td>
+              </tr>
+              <tr>
+                <td><strong>Cosine Vector Similarity</strong></td>
+                <td>$97.67\%$</td>
+                <td><strong>$98.61\%$</strong></td>
+                <td><span class="has-text-success">+0.94% Vector Alignment</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
 
   <!-- Footer -->
@@ -632,7 +1041,7 @@
 
   <!-- Interactive JavaScript Logic -->
   <script>
-    // Sample paths database for 10 classes
+    // Database of sample filenames across classes
     const classData = {
       0: { name: "0_10", strip: "sample_0001_class_0_0_10.png" },
       1: { name: "1_1004", strip: "sample_0002_class_1_1_1004.png" },
@@ -646,56 +1055,111 @@
       9: { name: "9_1000", strip: "sample_0010_class_9_9_1000.png" },
     };
 
-    function selectClass(c) {
-      // Update active button
-      document.querySelectorAll('.digit-btn').forEach((btn, idx) => {
+    // 4-View Class Selector
+    function selectClass4V(c) {
+      document.querySelectorAll('#digit-selector-4v .digit-btn').forEach((btn, idx) => {
         btn.classList.toggle('is-active', idx === c);
       });
-
       const info = classData[c];
-      const basePath = `static/media/views/class_${c}/${info.name}`;
-      
-      document.getElementById('img-front').src = `${basePath}/front_condition.png`;
-      document.getElementById('img-gen-0').src = `${basePath}/gen_view_00.png`;
-      document.getElementById('img-gen-1').src = `${basePath}/gen_view_01.png`;
-      document.getElementById('img-gen-2').src = `${basePath}/gen_view_02.png`;
-      document.getElementById('img-gen-3').src = `${basePath}/gen_view_03.png`;
-      document.getElementById('img-gt-0').src = `${basePath}/gt_view_00.png`;
-      document.getElementById('img-grid-strip').src = `static/media/grids/${info.strip}`;
+      const basePath = `static/media/normal_4/views/class_${c}/${info.name}`;
+      document.getElementById('img-4v-front').src = `${basePath}/front_condition.png`;
+      document.getElementById('img-4v-gen0').src = `${basePath}/gen_view_00.png`;
+      document.getElementById('img-4v-gen1').src = `${basePath}/gen_view_01.png`;
+      document.getElementById('img-4v-gen2').src = `${basePath}/gen_view_02.png`;
+      document.getElementById('img-4v-gen3').src = `${basePath}/gen_view_03.png`;
+      document.getElementById('img-4v-gt0').src = `${basePath}/gt_view_00.png`;
+      document.getElementById('img-4v-strip').src = `static/media/normal_4/grids/${info.strip}`;
     }
 
-    function toggleHeroGif(mode) {
-      const img = document.getElementById('hero-gif');
-      const btnLoss = document.getElementById('btn-gif-loss');
-      const btnPure = document.getElementById('btn-gif-pure');
+    // 12-View Spherical Inspector State & Functions
+    let currentClass12V = 0;
+    let currentMode12V = 'gen'; // 'gen' or 'gt'
 
+    function update12VViewImages() {
+      const info = classData[currentClass12V];
+      const basePath = `static/media/normal_12/views/class_${currentClass12V}/${info.name}`;
+      const prefix = currentMode12V === 'gen' ? 'gen_view_' : 'gt_view_';
+      
+      document.getElementById('img-12v-front').src = `${basePath}/front_condition.png`;
+      document.getElementById('img-12v-strip').src = `static/media/normal_12/grids/${info.strip}`;
+
+      // Update all 12 view images (v0 to v11)
+      for (let v = 0; v < 12; v++) {
+        const vPad = String(v).padStart(2, '0');
+        const imgElem = document.getElementById(`img-12v-v${v}`);
+        if (imgElem) {
+          imgElem.src = `${basePath}/${prefix}${vPad}.png`;
+        }
+      }
+    }
+
+    function selectClass12V(c) {
+      currentClass12V = c;
+      document.querySelectorAll('#digit-selector-12v .digit-btn').forEach((btn, idx) => {
+        btn.classList.toggle('is-active', idx === c);
+      });
+      update12VViewImages();
+    }
+
+    function set12VMode(mode) {
+      currentMode12V = mode;
+      document.getElementById('btn-12v-mode-gen').classList.toggle('is-active', mode === 'gen');
+      document.getElementById('btn-12v-mode-gt').classList.toggle('is-active', mode === 'gt');
+      update12VViewImages();
+    }
+
+    // GIF Toggle Functions
+    function toggleGif4V(mode) {
+      const img = document.getElementById('gif-4v');
+      const btnLoss = document.getElementById('btn-4v-loss');
+      const btnPure = document.getElementById('btn-4v-pure');
       if (mode === 'loss') {
-        img.src = 'static/media/training_evolution_with_loss.gif';
+        img.src = 'static/media/normal_4/training_evolution_with_loss.gif';
         btnLoss.classList.add('is-active');
         btnPure.classList.remove('is-active');
       } else {
-        img.src = 'static/media/training_evolution.gif';
+        img.src = 'static/media/normal_4/training_evolution.gif';
         btnPure.classList.add('is-active');
         btnLoss.classList.remove('is-active');
       }
     }
 
-    // Initialize Chart.js Quantitative Figures
-    document.addEventListener('DOMContentLoaded', () => {
-      // 1. Loss Convergence Chart (50 real empirical steps from history.json)
-      const lossLabels = ["1k", "2k", "3k", "4k", "5k", "6k", "7k", "8k", "9k", "10k", "11k", "12k", "13k", "14k", "15k", "16k", "17k", "18k", "19k", "20k", "21k", "22k", "23k", "24k", "25k", "26k", "27k", "28k", "29k", "30k", "31k", "32k", "33k", "34k", "35k", "36k", "37k", "38k", "39k", "40k", "41k", "42k", "43k", "44k", "45k", "46k", "47k", "48k", "49k", "50k"];
-      const trainLossData = [1.0408, 0.2006, 0.1541, 0.1236, 0.1151, 0.1034, 0.1018, 0.0942, 0.089, 0.0804, 0.0806, 0.0804, 0.0724, 0.0739, 0.0691, 0.071, 0.065, 0.0654, 0.0662, 0.0687, 0.0633, 0.064, 0.0632, 0.0579, 0.0559, 0.0546, 0.0562, 0.0628, 0.0541, 0.0545, 0.0534, 0.0539, 0.0528, 0.0542, 0.0493, 0.052, 0.0549, 0.0491, 0.0502, 0.0509, 0.0491, 0.0494, 0.0501, 0.0468, 0.0511, 0.0484, 0.0465, 0.0468, 0.0527, 0.0464];
-      const valLossData = [8.4902, 7.4927, 6.4235, 5.4415, 4.4889, 3.6617, 3.0352, 2.5059, 2.0859, 1.7537, 1.504, 1.3174, 1.1578, 1.0466, 0.945, 0.8764, 0.8135, 0.7487, 0.6816, 0.601, 0.5036, 0.4014, 0.3338, 0.2754, 0.2264, 0.1948, 0.1664, 0.1452, 0.1349, 0.1148, 0.1074, 0.0944, 0.0863, 0.082, 0.0679, 0.063, 0.0612, 0.0631, 0.0579, 0.0543, 0.0514, 0.0548, 0.0495, 0.0511, 0.0475, 0.0447, 0.0439, 0.0464, 0.0462, 0.0433];
+    function toggleGif12V(mode) {
+      const img = document.getElementById('gif-12v');
+      const btnLoss = document.getElementById('btn-12v-loss');
+      const btnPure = document.getElementById('btn-12v-pure');
+      if (mode === 'loss') {
+        img.src = 'static/media/normal_12/training_evolution_with_loss.gif';
+        btnLoss.classList.add('is-active');
+        btnPure.classList.remove('is-active');
+      } else {
+        img.src = 'static/media/normal_12/training_evolution.gif';
+        btnPure.classList.add('is-active');
+        btnLoss.classList.remove('is-active');
+      }
+    }
 
-      const ctxLoss = document.getElementById('chart-loss').getContext('2d');
-      new Chart(ctxLoss, {
+    // Initialize All Chart.js Figures on DOM Load
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // ==========================================
+      // 1. 4-VIEW CHARTS
+      // ==========================================
+      
+      // 4V Loss Chart
+      const loss4vLabels = ["1k", "2k", "3k", "4k", "5k", "6k", "7k", "8k", "9k", "10k", "11k", "12k", "13k", "14k", "15k", "16k", "17k", "18k", "19k", "20k", "21k", "22k", "23k", "24k", "25k", "26k", "27k", "28k", "29k", "30k", "31k", "32k", "33k", "34k", "35k", "36k", "37k", "38k", "39k", "40k", "41k", "42k", "43k", "44k", "45k", "46k", "47k", "48k", "49k", "50k"];
+      const train4vLoss = [1.0408, 0.2006, 0.1541, 0.1236, 0.1151, 0.1034, 0.1018, 0.0942, 0.089, 0.0804, 0.0806, 0.0804, 0.0724, 0.0739, 0.0691, 0.071, 0.065, 0.0654, 0.0662, 0.0687, 0.0633, 0.064, 0.0632, 0.0579, 0.0559, 0.0546, 0.0562, 0.0628, 0.0541, 0.0545, 0.0534, 0.0539, 0.0528, 0.0542, 0.0493, 0.052, 0.0549, 0.0491, 0.0502, 0.0509, 0.0491, 0.0494, 0.0501, 0.0468, 0.0511, 0.0484, 0.0465, 0.0468, 0.0527, 0.0464];
+      const val4vLoss = [8.4902, 7.4927, 6.4235, 5.4415, 4.4889, 3.6617, 3.0352, 2.5059, 2.0859, 1.7537, 1.504, 1.3174, 1.1578, 1.0466, 0.945, 0.8764, 0.8135, 0.7487, 0.6816, 0.601, 0.5036, 0.4014, 0.3338, 0.2754, 0.2264, 0.1948, 0.1664, 0.1452, 0.1349, 0.1148, 0.1074, 0.0944, 0.0863, 0.082, 0.0679, 0.063, 0.0612, 0.0631, 0.0579, 0.0543, 0.0514, 0.0548, 0.0495, 0.0511, 0.0475, 0.0447, 0.0439, 0.0464, 0.0462, 0.0433];
+
+      const ctx4vLoss = document.getElementById('chart-4v-loss').getContext('2d');
+      new Chart(ctx4vLoss, {
         type: 'line',
         data: {
-          labels: lossLabels,
+          labels: loss4vLabels,
           datasets: [
             {
               label: 'Train Loss (EMA)',
-              data: trainLossData,
+              data: train4vLoss,
               borderColor: '#00f0ff',
               backgroundColor: 'rgba(0, 240, 255, 0.08)',
               fill: true,
@@ -705,7 +1169,7 @@
             },
             {
               label: 'Val Loss (EMA Model)',
-              data: valLossData,
+              data: val4vLoss,
               borderColor: '#ff3366',
               backgroundColor: '#ff3366',
               borderWidth: 2.4,
@@ -718,52 +1182,24 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } },
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } } },
           scales: {
             x: { 
               grid: { color: 'rgba(255,255,255,0.06)' }, 
               ticks: { 
                 color: '#94a3b8', 
-                font: { size: 9 },
-                callback: function(val, index) {
-                  return index % 5 === 0 ? lossLabels[index] : '';
-                }
+                font: { size: 8.5 },
+                callback: (v, idx) => (idx % 10 === 0 ? loss4vLabels[idx] : '')
               } 
             },
-            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 8.5 } } }
           }
         }
       });
 
-      // 2. Throughput Chart
-      const ctxThroughput = document.getElementById('chart-throughput').getContext('2d');
-      new Chart(ctxThroughput, {
-        type: 'bar',
-        data: {
-          labels: ['Patch P=2 (4,096 tokens)', 'Patch P=4 (1,024 tokens)', 'Patch P=8 (256 tokens)'],
-          datasets: [{
-            label: 'Throughput (samples/sec)',
-            data: [165, 665, 1420],
-            backgroundColor: ['rgba(99, 102, 241, 0.7)', 'rgba(6, 182, 212, 0.85)', 'rgba(236, 72, 153, 0.7)'],
-            borderColor: ['#6366f1', '#06b6d4', '#ec4899'],
-            borderWidth: 1.5,
-            borderRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } },
-            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 9 } }, title: { display: true, text: 'Samples / Sec', color: '#94a3b8', font: { size: 9 } } }
-          }
-        }
-      });
-
-      // 3. ODE Steps vs Quality Benchmark (Real metrics from eval_step.py)
-      const ctxOde = document.getElementById('chart-ode').getContext('2d');
-      new Chart(ctxOde, {
+      // 4V ODE Chart
+      const ctx4vOde = document.getElementById('chart-4v-ode').getContext('2d');
+      new Chart(ctx4vOde, {
         type: 'line',
         data: {
           labels: ['2 Steps', '5 Steps', '10 Steps', '20 Steps', '25 Steps', '50 Steps', '100 Steps'],
@@ -795,49 +1231,40 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: { 
-            legend: { labels: { color: '#e2e8f0', font: { size: 10 } } },
+            legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } },
             tooltip: {
               callbacks: {
-                label: function(ctx) {
-                  const unit = ctx.dataset.yAxisID === 'y1' ? '°' : ' dB';
-                  return `${ctx.dataset.label}: ${ctx.parsed.y}${unit}`;
-                }
+                label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}${ctx.dataset.yAxisID === 'y1' ? '°' : ' dB'}`
               }
             }
           },
           scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 9 } } },
+            x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 8.5 } } },
             y: { 
-              type: 'linear', 
-              position: 'left',
-              grid: { color: 'rgba(255,255,255,0.06)' }, 
-              ticks: { color: '#00f0ff', font: { size: 9 } },
-              title: { display: true, text: 'PSNR (dB)', color: '#00f0ff', font: { size: 9 } },
-              min: 22.0,
-              max: 24.0
+              type: 'linear', position: 'left',
+              grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#00f0ff', font: { size: 8.5 } },
+              title: { display: true, text: 'PSNR (dB)', color: '#00f0ff', font: { size: 8.5 } },
+              min: 22.0, max: 24.0
             },
             y1: { 
-              type: 'linear', 
-              position: 'right',
-              grid: { drawOnChartArea: false }, 
-              ticks: { color: '#ff3366', font: { size: 9 } },
-              title: { display: true, text: 'MedAE (°)', color: '#ff3366', font: { size: 9 } },
-              min: 0.5,
-              max: 1.8
+              type: 'linear', position: 'right',
+              grid: { drawOnChartArea: false }, ticks: { color: '#ff3366', font: { size: 8.5 } },
+              title: { display: true, text: 'MedAE (°)', color: '#ff3366', font: { size: 8.5 } },
+              min: 0.5, max: 1.8
             }
           }
         }
       });
 
-      // 4. Radar Consistency Chart
-      const ctxRadar = document.getElementById('chart-radar').getContext('2d');
-      new Chart(ctxRadar, {
+      // 4V Radar Chart
+      const ctx4vRadar = document.getElementById('chart-4v-radar').getContext('2d');
+      new Chart(ctx4vRadar, {
         type: 'radar',
         data: {
           labels: ['View 0 (45°)', 'View 1 (135°)', 'View 2 (225°)', 'View 3 (315°)'],
           datasets: [
             {
-              label: 'Normal Cosine Similarity (%)',
+              label: 'Normal Cosine Sim (%)',
               data: [97.4, 98.1, 97.8, 97.4],
               borderColor: '#00f0ff',
               backgroundColor: 'rgba(0, 240, 255, 0.2)',
@@ -845,7 +1272,7 @@
               pointRadius: 3.5
             },
             {
-              label: 'Angular Accuracy <22.5° (%)',
+              label: 'Angular Acc <22.5° (%)',
               data: [91.8, 92.3, 93.3, 92.9],
               borderColor: '#10b981',
               backgroundColor: 'rgba(16, 185, 129, 0.25)',
@@ -857,17 +1284,231 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 10 } } } },
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } } },
           scales: {
             r: {
               grid: { color: 'rgba(255,255,255,0.1)' },
               angleLines: { color: 'rgba(255,255,255,0.1)' },
-              pointLabels: { color: '#e2e8f0', font: { size: 9.5 } },
+              pointLabels: { color: '#e2e8f0', font: { size: 9.0 } },
               ticks: { display: false, min: 85, max: 100 }
             }
           }
         }
       });
+
+      // 4V Throughput Chart
+      const ctx4vThroughput = document.getElementById('chart-4v-throughput').getContext('2d');
+      new Chart(ctx4vThroughput, {
+        type: 'bar',
+        data: {
+          labels: ['Patch P=2 (4,096 tokens)', 'Patch P=4 (1,024 tokens)', 'Patch P=8 (256 tokens)'],
+          datasets: [{
+            label: 'Throughput (samples/sec)',
+            data: [165, 665, 1420],
+            backgroundColor: ['rgba(99, 102, 241, 0.7)', 'rgba(6, 182, 212, 0.85)', 'rgba(236, 72, 153, 0.7)'],
+            borderColor: ['#6366f1', '#06b6d4', '#ec4899'],
+            borderWidth: 1.5,
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 8.5 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 8.5 } }, title: { display: true, text: 'Samples / Sec', color: '#94a3b8', font: { size: 8.5 } } }
+          }
+        }
+      });
+
+
+      // ==========================================
+      // 2. 12-VIEW DENSE CHARTS
+      // ==========================================
+
+      // 12V Loss Chart (50 condensed validation steps up to 100k)
+      const loss12vLabels = ["1k", "5k", "10k", "15k", "20k", "25k", "30k", "35k", "40k", "45k", "50k", "55k", "60k", "65k", "70k", "75k", "80k", "85k", "90k", "95k", "100k"];
+      const train12vLoss = [1.059, 0.0712, 0.0552, 0.0461, 0.0426, 0.039, 0.0391, 0.037, 0.0334, 0.036, 0.0332, 0.0328, 0.0321, 0.0315, 0.0311, 0.0308, 0.0305, 0.0301, 0.0298, 0.0294, 0.0291];
+      const val12vLoss = [8.5529, 2.7608, 0.7568, 0.1537, 0.0542, 0.038, 0.0365, 0.0328, 0.033, 0.0337, 0.0315, 0.0310, 0.0305, 0.0301, 0.0298, 0.0296, 0.0295, 0.0294, 0.0293, 0.0292, 0.0291];
+
+      const ctx12vLoss = document.getElementById('chart-12v-loss').getContext('2d');
+      new Chart(ctx12vLoss, {
+        type: 'line',
+        data: {
+          labels: loss12vLabels,
+          datasets: [
+            {
+              label: 'Train Loss (EMA)',
+              data: train12vLoss,
+              borderColor: '#00f0ff',
+              backgroundColor: 'rgba(0, 240, 255, 0.08)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2.2,
+              pointRadius: 0
+            },
+            {
+              label: 'Val Loss (EMA Model)',
+              data: val12vLoss,
+              borderColor: '#ec4899',
+              backgroundColor: '#ec4899',
+              borderWidth: 2.4,
+              pointRadius: 2.5,
+              pointHoverRadius: 5,
+              tension: 0.3
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } } },
+          scales: {
+            x: { 
+              grid: { color: 'rgba(255,255,255,0.06)' }, 
+              ticks: { color: '#94a3b8', font: { size: 8.5 } } 
+            },
+            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 8.5 } } }
+          }
+        }
+      });
+
+      // 12V ODE Steps vs Quality Chart
+      const ctx12vOde = document.getElementById('chart-12v-ode').getContext('2d');
+      new Chart(ctx12vOde, {
+        type: 'line',
+        data: {
+          labels: ['2 Steps', '5 Steps', '10 Steps', '20 Steps', '25 Steps', '50 Steps', '100 Steps'],
+          datasets: [
+            {
+              label: 'Reconstruction PSNR (dB)',
+              data: [25.69, 26.00, 25.73, 25.76, 25.81, 25.83, 25.72],
+              borderColor: '#00f0ff',
+              backgroundColor: 'rgba(0, 240, 255, 0.1)',
+              fill: true,
+              tension: 0.3,
+              borderWidth: 2.4,
+              pointRadius: 4,
+              yAxisID: 'y'
+            },
+            {
+              label: 'Mean Angular Error (°)',
+              data: [5.37, 5.17, 5.51, 5.51, 5.47, 5.44, 5.55],
+              borderColor: '#ff3366',
+              backgroundColor: 'rgba(255, 51, 102, 0.15)',
+              tension: 0.3,
+              borderWidth: 2.2,
+              pointRadius: 4,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}${ctx.dataset.yAxisID === 'y1' ? '°' : ' dB'}`
+              }
+            }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 8.5 } } },
+            y: { 
+              type: 'linear', position: 'left',
+              grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#00f0ff', font: { size: 8.5 } },
+              title: { display: true, text: 'PSNR (dB)', color: '#00f0ff', font: { size: 8.5 } },
+              min: 24.5, max: 27.0
+            },
+            y1: { 
+              type: 'linear', position: 'right',
+              grid: { drawOnChartArea: false }, ticks: { color: '#ff3366', font: { size: 8.5 } },
+              title: { display: true, text: 'MAE (°)', color: '#ff3366', font: { size: 8.5 } },
+              min: 4.0, max: 7.0
+            }
+          }
+        }
+      });
+
+      // 12V Spherical Radar Chart across all 12 camera positions
+      const ctx12vRadar = document.getElementById('chart-12v-radar').getContext('2d');
+      new Chart(ctx12vRadar, {
+        type: 'radar',
+        data: {
+          labels: ['Eq 45°', 'Eq 135°', 'Eq 225°', 'Eq 315°', 'Top 45°', 'Top 135°', 'Top 225°', 'Top 315°', 'Bot 45°', 'Bot 135°', 'Bot 225°', 'Bot 315°'],
+          datasets: [
+            {
+              label: 'Cosine Sim (%)',
+              data: [98.56, 99.11, 98.71, 98.24, 98.77, 99.09, 98.62, 98.50, 98.48, 98.59, 98.39, 98.20],
+              borderColor: '#00f0ff',
+              backgroundColor: 'rgba(0, 240, 255, 0.2)',
+              borderWidth: 2.2,
+              pointRadius: 3.0
+            },
+            {
+              label: 'Acc <22.5° (%)',
+              data: [96.49, 96.66, 96.88, 96.31, 96.96, 96.43, 96.52, 96.39, 96.27, 96.11, 96.32, 96.29],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.25)',
+              borderWidth: 2.2,
+              pointRadius: 3.0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } } },
+          scales: {
+            r: {
+              grid: { color: 'rgba(255,255,255,0.1)' },
+              angleLines: { color: 'rgba(255,255,255,0.1)' },
+              pointLabels: { color: '#e2e8f0', font: { size: 8.5 } },
+              ticks: { display: false, min: 94, max: 100 }
+            }
+          }
+        }
+      });
+
+      // 12V Class Performance Bar Chart
+      const ctx12vClasses = document.getElementById('chart-12v-classes').getContext('2d');
+      new Chart(ctx12vClasses, {
+        type: 'bar',
+        data: {
+          labels: ['Digit 0', 'Digit 1', 'Digit 2', 'Digit 3', 'Digit 4', 'Digit 5', 'Digit 6', 'Digit 7', 'Digit 8', 'Digit 9'],
+          datasets: [
+            {
+              label: 'Normal PSNR (dB)',
+              data: [24.27, 29.44, 24.59, 24.36, 24.85, 25.13, 23.37, 27.03, 27.31, 27.12],
+              backgroundColor: 'rgba(6, 182, 212, 0.8)',
+              borderColor: '#06b6d4',
+              borderWidth: 1.2,
+              borderRadius: 4
+            },
+            {
+              label: 'MAE (°)',
+              data: [5.71, 3.08, 5.74, 6.47, 5.81, 5.84, 8.32, 4.20, 4.71, 5.13],
+              backgroundColor: 'rgba(236, 72, 153, 0.8)',
+              borderColor: '#ec4899',
+              borderWidth: 1.2,
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#e2e8f0', font: { size: 9.5 } } } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 8.5 } } },
+            y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#94a3b8', font: { size: 8.5 } } }
+          }
+        }
+      });
+
     });
   </script>
 </body>
